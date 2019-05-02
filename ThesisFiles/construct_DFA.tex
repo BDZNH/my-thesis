@@ -1,0 +1,301 @@
+\chapter{实例化类DFA对象}
+
+\section{DFA类}
+在本文中，我们仅仅对$DFA$应用最小化算法，FIRE engine 中的DFA类为应用最小化算法的类。
+FIRE engine 提供了多种方式构造一个$DFA$，查看类$DFA$的实现，有如下内容(文件$DFA.h$)
+\lstset{style=mystyle}
+\begin{lstlisting}[language=C++,label={lst:consDFA},caption={class DFA}]
+class DFA : virtual public FAabs
+{
+public:
+    // Default copy constructor, destructor, operator= are okay.
+    inline DFA();
+
+    // A special constructor used for subset construction etc.
+    inline DFA(const DFA_components& r);
+    ……
+    StatePool Q;
+    // S must be a singleton set, or empty. |S| <= 1
+    StateSet S;
+    StateSet F;  // final states
+    DTransRel T;
+}
+……
+inline DFA::DFA(const DFA_components& r) :Q(r.Q), S(r.S), F(r.F), T(r.T)
+{
+    current = Invalid;
+    assert(class_invariant());
+}
+……
+\end{lstlisting}
+由上面的代码\ref{lst:consDFA}可知，类$DFA$默认情况下，提供一个用“DFA\_com-ponents”对象的引用来实例化DFA对象的方法。
+
+除了使用“DFA\_components”来实例化DFA对象之外，FIRE engine 还可以通过执行类$LBFA$的成员函数$LBFA::determinism()$来将$LBFA$对象转化成一个$DFA$对象，该成员函数声明如代码\ref{lst:determinism}
+\lstset{style=mystyle}
+\begin{lstlisting}[language=C++,label={lst:determinism},caption={LBFA::determinism()}]
+class LBFA : virtual public FAabs
+{
+public:
+……
+    virtual DFA determinism() const;
+……
+}
+\end{lstlisting}
+拥有同样功能的类还有类$FA$、类$RFA$和类$RBFA$，这四个类与类$DFA$都派生自类$FAabs$。
+
+类$FAabs$及其子类关系如图\ref{fig:FAabsRel}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{FAabsRel}
+    \caption{FAabs及其派生类}
+    \label{fig:FAabsRel}
+\end{figure}
+
+%\newpage
+\section{DFA\_components 结构体}\label{sc:dfa_com}% ~\label{sc:dfa_com}
+
+从“DFA\_components”构造一个$DFA$对象是最简单直接的方法，观察“DFA\_components”的实现，如下（文件$DFA\_ components.h$）:
+\lstset{style=mystyle}
+\begin{lstlisting}[language=C++,label={lst:DFA_Com},caption={DFA\_components}]
+#include "StatePool.h"
+#include "StateSet.h"
+#include "DTransRel.h"
+
+struct DFA_components
+{
+    StatePool Q;
+    StateSet S;
+    DTransRel T;
+    StateSet F;
+};    
+\end{lstlisting}
+由代码\ref{lst:DFA_Com}可知，结构体$DFA\_components$内包含$StatePool$变量$Q$，$StateSet$变量$S$，$DTransRel$变量$T$，$StateSet$变量$F$。若需要声明一个$DFA\_components$变量，则需要分别实例化$StatePool$、$StateSet$、$DTransRel$对象。这几个类还分别继承自其他的类，如图\ref{fig:DFARel}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{DFARel}
+    \caption{DFA与其成员类及成员类的基类}
+    \label{fig:DFARel}
+\end{figure}
+
+类$DFA$的成员变量“$T$”为一个$DTransRel$对象，公有继承自模板类$StateTo<T>$，模板参数“$T$”为保护继承自类$TRansImpl$的类$DTrans$。
+
+\subsection{StatePool 类}
+StatePool类的部分实现如下（文件$StatePool.h$）：
+\lstset{style=mystyle}
+\begin{lstlisting}[language=C++,label={lst:StatePool},caption={StatePool}]
+class StatePool
+{
+public:
+    // How many states are already allocated(one more than that last allocated one,
+    // since it begins at 0).
+    inline int size() const;
+    ……
+    // Allocate a new state.
+    inline State allocate();
+    ……
+private:
+    // The next one to be allocated.
+    int next;
+};
+……
+inline int StatePool::size() const
+{
+    return(next);
+}
+……
+inline State StatePool::allocate()
+{
+    return(next++);
+}
+\end{lstlisting}
+如代码\ref{lst:StatePool}所示，其中$StatePool::size()$和$StatePool::allocate()$为类$StatePool$两个比较重要的函数，前者为自动机$M$的大小，也即$|M|=|Q|$。$StatePool::allocate()$的作用稍后解释。
+\subsection{StateSet 类}
+类$StateSet$的部分声明如下（文件$StateSet.h$）：
+\lstset{style=mystyle}
+\begin{lstlisting}[language=C++,label={lst:StateSet},caption={StateSet}]
+class StateSet :protected BitVec
+{
+public:
+……
+    // inserts a State. r = [0,domain())
+    inline StateSet& add(const State r);
+    
+    // set How many States can this set contain.
+    // [O, r) can be contained in *this.
+    inline void set_domain(const int r);
+……
+}
+\end{lstlisting}
+由于在实例化过程$DFA$对象的过程中，只需要用到类$StateSet$的成员函数$StateSet::set\_domain()$和$StateSet::add()$，所以这里仅仅列出这两个成员函数。类$StateSet$中实现了集合的交、并、差、补、判断是否为空集等功能。类$StateSet$的大部分功能建立在类$BitVec$上，为了避免本文篇幅过于冗长，这里不再赘述类$BitVec$的内容。
+
+
+\subsection{DTransRel 类}
+
+类$DTransRel$是$DFA$的一个重要成员，它存储了$DFA$的状态转移关系，后面将会提到的等价类分割，等价状态合并等都与这个类息息相关。类$DTransRel$的部分实现如下（文件$DTransRel.h$）：
+\lstset{style=mystyle}
+\begin{lstlisting}[language=C++,label={lst:DTransRel},caption={DTransRel}]
+// Implement a deterministic transition relation, as a function from States time
+// char to State.This is used for transition relations in DFA's.
+class DTransRel :public StateTo<DTrans>
+{
+public:
+……
+    // Some functions updating *this:
+    inline DTransRel& add_transition(const State p, const CharRange a, const State q);
+……
+    // Change the domain of this relation.
+    inline void set_domain(const int r);
+……
+}
+\end{lstlisting}
+在实例化类$DFA$的过程中，类$DTransRel$需要用到的成员函数只有$DTransRel::set\_domain()$和$DTransRel::add\_transition()$。
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{实例化类DFA对象}\label{sec:get_a_dfa}
+
+在文件$DFA.cpp$中有如下实现：
+\lstset{style=mystyle}
+\begin{lstlisting}[language=C++,label={lst:DFACpp},caption={DFA.cpp}]
+inline int DFA::class_invariant() const
+{
+	return(Q.size() == S.domain()
+		&& Q.size() == F.domain()
+		&& Q.size() == T.domain()
+		&& current < Q.size()
+		&& S.size() <= 1);
+}
+\end{lstlisting}
+而文件$DFA.h$中的构造函数如下：
+\lstset{style=mystyle}
+\begin{lstlisting}[language=C++,label={lst:DFA_H},caption={DFA.h}]
+inline DFA::DFA(const DFA_components& r) :Q(r.Q), S(r.S), F(r.F), T(r.T)
+{
+	current = Invalid;
+	assert(class_invariant());
+}
+\end{lstlisting}
+由代码\ref{lst:DFACpp}和代码\ref{lst:DFA_H}可知，在语句“assert(class\_invariant());”处，若函数“class\_invariant()”返回值为“false”，那么程序将在此处中止\cite{assert_abort}。由此可以知道，类$DFA$要求其成员变量满足
+\begin{equation}\label{eq:DFA_class_invariant}
+    (Q.size() \equiv S.domain() \equiv T.domain ) \land (S.size() \leq 1)
+\end{equation}
+对于$current \le Q.size() $，“current”变量的值被初始化为“Invalid”，并且之后没有对其进行更改，所以不列入式\ref{eq:DFA_class_invariant}中。
+
+在文件$State.h$中有如下定义
+\lstset{style=mystyle}
+\begin{lstlisting}[language=C++,label={lst:State_H},caption={State.h}]
+// Encode automata states as integers.
+typedef signed int State;
+
+// Invalid states mean something bad is about to happen.
+const State Invalid = -1;
+\end{lstlisting}
+由代码\ref{lst:State_H}可知，$State$类型实际上是整型，而“Invalid”为“-1”。
+
+%\clearpage
+根据本节以上内容以及\ref{sc:dfa_com}节内容所说，可以实例化如图\ref{fig:DFA1}的自动机。
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{automaton_1}
+    \caption{DFA示例}
+    \label{fig:DFA1}
+\end{figure}
+
+图\ref{fig:DFA1}中的自动机的转移函数如表\ref{tab:DFA1}
+
+\begin{table}[!htbp]
+    \caption{图{\ref{fig:DFA1}}状态转移函数}
+    \label{tab:DFA1}
+    \centering
+    \small% fontsize
+    \setlength{\tabcolsep}{4pt}% column separation
+    \renewcommand{\arraystretch}{1.2}%row space 
+    % \begin{tabular}{cc|p{3em}<{\centering} p{3em}<{\centering}} 
+    %     \hline 
+    %     \multirow{2}*{\bfseries 状态说明} & \multirow{2}*{\bfseries 状态} & \multicolumn{2}{c}{\bfseries 输入字符} \\
+    %     %                        &        & \multicolumn{2}{c}{输入字符} \\
+    %     \cline{3-4}    &  &    $0$ & $1$     \\
+    %     \hline
+    \begin{tabular}{l p{3em}<{\centering} p{3em}<{\centering} p{3em}<{\centering}}
+        \toprule %\hline 
+        \multirow{2}{*}{状态说明} & \multirow{2}{*}{状态} & \multicolumn{2}{c}{输入字符} \\
+		\cline{3-4}      &    &$0$ & $1$  \\
+        \midrule%\hline
+        开始状态(start)          & $q_0$ & $q_1$  & $q_0$    \\
+                                & $q_1$ & $q_2$  & $q_0$    \\
+                                & $q_2$ & $q_3$  & $q_0$    \\
+        结束状态(accept)         & $q_3$ & $q_3$  & $q_0$    \\
+        \bottomrule%\hline  
+    \end{tabular}
+\end{table}
+
+实例化$DFA$类如代码\ref{lst:DFASample}：
+
+\lstset{style=mystyle}
+\begin{lstlisting}[language=C++,label={lst:DFASample},caption={实例化DFA示例}]
+#include"DFA.h"
+#include<iostream>
+int main()
+{
+    DFA_components dfa_com1;
+
+    // StateSet S  开始状态集
+    dfa_com1.S.set_domain(10);
+    dfa_com1.S.add(0);
+
+    // StateSet F  结束状态集
+    dfa_com1.F.set_domain(10);
+    dfa_com1.F.add(3);
+
+    // StatePool Q 
+    int i = 10;
+    while (i--)
+    {
+        dfa_com1.Q.allocate();
+    }
+
+    // DTransRel T transition             
+    dfa_com1.T.set_domain(10);
+    dfa_com1.T.add_transition(0, '0', 1);
+    dfa_com1.T.add_transition(1, '0', 2);
+    dfa_com1.T.add_transition(2, '0', 3);
+    dfa_com1.T.add_transition(3, '0', 3);
+    dfa_com1.T.add_transition(0, '1', 0);
+    dfa_com1.T.add_transition(1, '1', 0);
+    dfa_com1.T.add_transition(2, '1', 0);
+    dfa_com1.T.add_transition(3, '1', 0);
+
+    DFA dfa1(dfa_com1);
+    dfa1.usefulf();
+
+    std::cout<<dfa1<<std::endl;
+	
+    return 0;
+}
+\end{lstlisting}
+
+代码\ref{lst:DFASample}将在控制台输出如下信息：
+\lstset{style=mystyle}
+\begin{lstlisting}[language=C++,label={lst:DFASampleLog},caption={图\ref{fig:DFA1}中自动机在 FIRE engine 中的表现形式}]
+DFA
+Q = [0,4)
+S = { 0 }
+F = { 3 }
+Transitions =
+0->{ '0'->1  '1'->0 }
+1->{ '0'->2  '1'->0 }
+2->{ '0'->3  '1'->0 }
+3->{ '0'->3  '1'->0 }
+
+current = -1
+\end{lstlisting}
+
+下文中将以表\ref{tab:DFA1}的形式来描述一个自动机，以代码\ref{lst:DFASampleLog}的形式来表示自动机在 FIRE engine 中的展现形式。
