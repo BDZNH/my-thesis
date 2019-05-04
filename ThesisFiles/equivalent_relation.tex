@@ -31,3 +31,50 @@ Xidian University
         \hline
     \end{tabular}
 \end{table}
+
+% \begin{algorithm}
+%     \caption{Euclid’s algorithm}\label{euclid}
+%     \begin{algorithmic}[1]
+%         \Procedure{Euclid}{$a,b$}\Comment{The g.c.d. of a and b}
+%         \State $r\gets a\bmod b$
+%         \While{$r\not=0$}\Comment{We have the answer if r is 0}
+%         \State $a\gets b$
+%         \State $b\gets r$
+%         \State $r\gets a\bmod b$
+%         \EndWhile\label{euclidendwhile}
+%         \State \textbf{return} $b$\Comment{The gcd is b}
+%         \EndProcedure
+%         \do $L \not= \emptyset \longrightarrow $ 
+        
+%     \end{algorithmic}
+% \end{algorithm}
+
+% \mbox{　} $P:=[Q]_{E_0}$; \\
+% \mbox{　} $L:= ( \mbox{\textbf{if }} ( |F| \leq |Q \setminus F | ) \mbox{\textbf{then }} \{F\} \mbox{\textbf{else }} \{ Q \setminus F \} \mbox{\textbf{fi }} ) \times V $; \\
+% \mbox{　} $ \{ \mbox{恒有: } [Q]_E \sqsubseteq P \sqsubseteq [Q]_{E_0} \land L \subseteq (P \times V) $ \\
+% \mbox{　　　} $ \land (\forall Q_0,Q_1,a:Q_0 \in Q \land (Q_1,a) \in L : \neg Splittable (Q_0,Q_1,a)) \Rightarrow (P=[Q]_E) \} $ \\
+% \mbox{　} $ \mbox{\textbf{do }} L \not= \emptyset \longrightarrow $ \\ 
+% \mbox{　　　} $ \mbox{\textbf{let }} Q_1,a:(Q_1,a) \in L $; \\
+% \mbox{　　　} $ P_{old} := P $; \\
+% \mbox{　　　} $ L := L \setminus \{ (Q_1,a) \} $; \\
+% \mbox{　　　} $ \{  \mbox{恒有: } [Q]_E \sqsubseteq P \sqsubseteq P_{old} \} $ \\
+% \mbox{　　　} $ \mbox{\textbf{for }} Q_0 : Q_0 \in P_{old} \land Splittable (Q_0,Q_1,a) \mbox{\textbf{ do }} $ \\
+% \mbox{　　　　　} $ Q'_0 := \{ p:p \in Q_0 \land T(p,a) \in Q_1 \} $; \\
+% \mbox{　　　　　} $ P:= P \setminus \{ Q_0 \} \cup \{ Q_0 \setminus Q'_0,b \} $;\\
+% \mbox{　　　　　} $ \mbox{\textbf{for }} b:b \in V \mbox{\textbf{ do }} $ \\
+% \mbox{　　　　　　　} $ \mbox{\textbf{if }} (Q_0,b) \in L \rightarrow L := L \setminus \{ (Q_0,b) \} \cup \{ (Q'_0,b),(Q_0, \setminus Q'_0,b ) \} $;\\ 
+% \mbox{　　　　　　　} $ \talloblong (Q_0,b) \notin L \rightarrow $ \\
+% \mbox{　　　　　　　　　} $ L := L \cup (\mbox{\bfseries if} ( |Q'_0| \leq |Q_0 \setminus Q'_0| ) \mbox{\bfseries then} \{ (Q'_0 , b) \} \mbox{\bfseries else} \{ ( Q'_0 \setminus Q'_0,b ) \} \mbox{\bfseries fi} ) $ \\
+% \mbox{　　　　　　　} $ \mbox{\textbf{fi}} $ \\
+% \mbox{　　　　　} $ \mbox{\textbf{rof}} $ \\
+% \mbox{　　　} $ \mbox{\textbf{rof}} $ \\
+% \mbox{　　　} $ \{ (\forall Q_0,Q_0 \in P : \neg Splittable(Q_0,Q_1,a)) \} $ \\
+% \mbox{　} $ \mbox{\textbf{od }} \{ P = [Q]_E \} $ \\
+
+% \begin{algorithm}
+%     \caption{Euclid’s algorithm}\label{euclid}
+%     \begin{program}
+%         $P:=[Q]_{E_0}$;
+%         $L:= ( \mbox{\textbf{if }} ( |F| \leq |Q \setminus F | ) \mbox{\textbf{then }} \{F\} \mbox{\textbf{else }} \{ Q \setminus F \} \mbox{\textbf{fi }} ) \times V $;
+%     \end{program}
+% \end{algorithm}

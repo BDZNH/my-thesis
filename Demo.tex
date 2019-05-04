@@ -2,14 +2,15 @@
 \documentclass[WordOneHalf]{XDUthesis}
 % 参数设置：
 %     功能设置：
-%         <nologo>: 封面页去除logo（默认有logo）
+%         <nologo>:      封面页去除logo（默认有logo）
 %         <WordOneHalf>: Word 1.5 倍行距（近似）（默认关闭）
-%         <contentsnd>: 目录去除点的连接
+%         <contentsnd>:  目录去除点的连接
+%         <print>:       启用打印样式
 %     以下为字体设置，仅在XeLaTeX和LuaLaTeX下有效；不设置由系统自动检测【Windows:windowsn, mac:mac】
 %         <windowsn>: 由工作手册指定的字体设置，xelatex 下复制会乱码（不影响打印）
 %         <windowsf>: 宋体的粗体版本由华文中宋替代，PDF复制不会有乱码；粗体黑体会有乱码
-%         <adobe>: 采用对应的Adobe宋体和黑体作为中易宋体和黑体的替代；PDF复制无乱码
-%         <mac>: Mac系统下的字体
+%         <adobe>:    采用对应的Adobe宋体和黑体作为中易宋体和黑体的替代；PDF复制无乱码
+%         <mac>:      Mac系统下的字体
 % 
 
 \title{有限自动机C++工具箱等价性和最小化类软件测试}
@@ -77,7 +78,14 @@
 \hyphenpenalty=10000
 \hbadness=10000
 
+\usepackage{stmaryrd}  %toollbar
+% \usepackage{bicaption}
+% \usepackage{clrscode3e}
 
+% \usepackage{algorithm}
+% \usepackage{algpseudocode}
+
+% \usepackage{program}
 
 \begin{document}
 
@@ -103,6 +111,7 @@
 \input{ThesisFiles/equivalent_relation.tex}
 \input{ThesisFiles/construct_DFA.tex}
 \input{ThesisFiles/realwork.tex}
+\input{ThesisFiles/conclusions.tex}
 
 % 致谢
 \input{ThesisFiles/Thanks}
@@ -119,6 +128,7 @@
 \input{ThesisFiles/basic_definition.tex}
 \input{ThesisFiles/FA.tex}
 \input{ThesisFiles/Gpaphics.tex}
+\input{ThesisFiles/table.tex}
 
 \end{document}
 

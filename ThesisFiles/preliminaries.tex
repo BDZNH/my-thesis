@@ -38,17 +38,17 @@
     \small% fontsize
     \setlength{\tabcolsep}{4pt}% column separation
     \renewcommand{\arraystretch}{1.2}%row space 
-    \begin{tabular}{cccccc} 
-        \hline 
+    \begin{tabular}{l p{4em}<{\centering} p{3em}<{\centering} p{3em}<{\centering} p{3em}<{\centering} p{3em}<{\centering}} 
+        \toprule%\hline 
         \multirow{2}{*}{状态说明} & \multirow{2}{*}{状态} & \multicolumn{4}{c}{输入字符} \\
 		\cline{3-6}      &    &$a$ & $b$ & $1$ & $\epsilon$ \\
         %                        &        & \multicolumn{4}{c}{输入字符} \\
         %\cline{3-6}  {状态说明}  & {状态} &$a$ & $b$ & $1$ & $\epsilon$ \\
-        \hline
+        \midrule%\hline
         开始状态(start)  & $q_0$ & -     & $q_1$  &      - &     -    \\
                         & $q_1$ & $q_2$ &    -   &    -   &    $q_2$ \\
         结束状态(accept) & $q_2$ &   -   & -      & $q_2$  &    -     \\
-        \hline 
+        \bottomrule%\hline 
     \end{tabular}
 \end{table}
 

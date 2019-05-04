@@ -1,3 +1,4 @@
+%!TEX root = ../Demo.tex
 \chapter{自动机状态转移图}
 
 %%  接受{$\mathcal{L}$}=0*10*的自动机{\cite[fig 5-4]{book1}}
@@ -31,34 +32,44 @@
     \label{fig:DFA4}
 \end{figure}
 
-如图\ref{fig:DFA4}为一个完全自动机
+
+\begin{figure}[!htbp]
+  \centering
+  \begin{subfigure}[b]{0.35\textwidth}
+      \includegraphics[width=\textwidth]{usefulf2-1}
+      \caption{}
+      \label{fig:usefulf2-1}
+  \end{subfigure}
+  ~
+  \begin{subfigure}[b]{0.35\textwidth}
+      \includegraphics[width=\textwidth]{usefulf2-2}
+      \caption{}
+      \label{fig:usefulf2-2}
+  \end{subfigure}
+  \caption{(a)接受{$\mathcal{L}$}=000*的自动机；  (b) 图(a)去除非 “final-reachable” 状态 {$q_1$}； }
+  \label{fig:usefulf2-0}
+\end{figure}
 
 
 \begin{figure}[!htbp]
-    \centering
-    \begin{subfigure}[b]{0.35\textwidth}
-      \includegraphics[width=\textwidth]{oaspl_a}
+  \centering
+  \begin{subfigure}[b]{0.6\textwidth}
+      \includegraphics[width=\textwidth]{DFA11-0}
       \caption{}
-      \label{fig:oaspl_a}
-    \end{subfigure}%
-    ~% add desired spacing
-    \begin{subfigure}[b]{0.35\textwidth}
-      \includegraphics[width=\textwidth]{oaspl_b}
+      \label{fig:DFA11-0}
+  \end{subfigure}
+  \\
+  \begin{subfigure}[b]{0.6\textwidth}
+      \includegraphics[width=\textwidth]{DFA11-1}
       \caption{}
-      \label{fig:oaspl_b}
-    \end{subfigure}
-    \\% line break
-    \begin{subfigure}[b]{0.35\textwidth}
-      \includegraphics[width=\textwidth]{oaspl_c}
+      \label{fig:DFA11-1}
+  \end{subfigure}
+  \\
+  \begin{subfigure}[b]{0.6\textwidth}
+      \includegraphics[width=\textwidth]{DFA11-2}
       \caption{}
-      \label{fig:oaspl_c}
-    \end{subfigure}%
-    ~% add desired spacing
-    \begin{subfigure}[b]{0.35\textwidth}
-      \includegraphics[width=\textwidth]{oaspl_d}
-      \caption{}
-      \label{fig:oaspl_d}
-    \end{subfigure}
-    \bicaption{总声压级。(a) 这是子图说明信息，(b) 这是子图说明信息，(c) 这是子图说明信息，(d) 这是子图说明信息。}{OASPL.(a) This is the explanation of subfig, (b) This is the explanation of subfig, (c) This is the explanation of subfig, (d) This is the explanation of subfig.}
-    \label{fig:oaspl}
+      \label{fig:DFA11-2}
+  \end{subfigure}
+  \caption{(a)一个DFA；  (b) 图(a) 去除非 “start-reachable” 状态 {$q_9$}；(c) 图(a)移除转移关系$T=\{(4 \times 1 \times 1),(8 \times 0 \times 5),(3 \times 0 \times 2),(7 \times 0 \times 6)\}$后的DFA。 }
+  \label{fig:DFA11}
 \end{figure}

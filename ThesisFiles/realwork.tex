@@ -12,7 +12,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{无限循环}
 
-按 \ref{sec:get_a_dfa} 节那样实例化一个如表 \ref{tab:DFA4} 的 $DFA$ 的对象之后，调用函数 $DFA::min\_Watson()$ 。（表 \ref{tab:DFA4} 对应的状态转移图为图 \ref{fig:DFA4_0}，含有陷阱状态 $q_5$ \footnote{进入此状态之后无法通过任何转移离开，如图 \ref{fig:DFA4_0} 中的状态 {$q_5$}。} ）
+实例化一个如表 \ref{tab:DFA4} 的 DFA 的对象之后，调用函数 DFA::min\_Watson()。（表 \ref{tab:DFA4} 对应的状态转移图为图 \ref{fig:DFA4_0}，含有陷阱状态 $q_5$ \footnote{进入此状态之后无法通过任何转移离开，如图 \ref{fig:DFA4_0} 中的状态 {$q_5$}。} ）
 
 \begin{table}[!htbp]
     \caption{接受{$\mathcal{L}=0^*10^*$}的自动机{\cite{book1}}}
@@ -106,7 +106,7 @@ for (oldq->iter_start(i); !oldq->iter_end(i); oldq->iter_next(i))
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{函数 DFA::usefulf() 运行结果错误}
+\section{函数 DFA::usefulf() 运行错误}
 
 “\verb+DFA::usefulf()+”函数为一个重要函数。用于去除有限自动机中的非“final-reachable”状态，在执行最小化算法前执行该函数，可以去除有限自动机中的非“final-reachable”状态，进而减少程序运行时间。其定义如代码 \ref{lst:usefulf}
 \lstset{style=mystyle}
@@ -126,7 +126,7 @@ DFA& usefulf();
     \setlength{\tabcolsep}{4pt}% column separation
     \renewcommand{\arraystretch}{1.2}%row space 
     %\begin{tabular}{lcrr} 
-        \begin{tabular}{l p{3em}<{\centering} p{3em}<{\centering} p{3em}<{\centering}}
+        \begin{tabular}{l p{4em}<{\centering} p{3em}<{\centering} p{3em}<{\centering}}
         \toprule %\hline 
         \multirow{2}{*}{状态说明} & \multirow{2}{*}{状态} & \multicolumn{2}{c}{输入字符} \\
 		\cline{3-4}      &    &$0$ & $1$  \\
@@ -161,7 +161,7 @@ DFA& usefulf();
     \label{fig::usefulf_console_log}
 \end{figure}
 
-可以确定函数为完成其定义功能。
+可以确定函数未完成其定义功能。
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % {\bfseries 错误原因}
@@ -202,30 +202,11 @@ for (st = 0; st < Q.size(); st++)
 \end{lstlisting}
 在代码 \ref{lst:DFA_usefulf_1} 中将 “ final-reachable ” 状态保存到 StateTo<State> 变量 newnames 中，通过 “ ret.Q.allocate()” 为状态命名新的状态名，作为新的自动机的状态名。DFA\_components 变量 ret 用于构建新的自动机，再看函数内构造新的自动机的主要实现部分，如代码 \ref{lst:DFA_usefulf_2}
 \lstset{style=mystyle}
-\begin{lstlisting}[language=C++,label={lst:DFA_usefulf_2},caption={ DFA.cpp },firstnumber=115]
-CRSet a;
-for (State st = 0; st < Q.size(); st++)
+\begin{lstlisting}[language=C++,label={lst:DFA_usefulf_2},caption={ DFA.cpp },firstnumber=130]
+for (it = 0; !a.iter_end(it); it++)
 {
-    // If st is the representative, construct the transition.
-    if (st == r.eq_class_representative(st))
-    {
-        State stprime(newnames.lookup(st));
-        // What are st's out-transitions?
-        CharRange b;
-        a = T.out_labels(st);
-        // The out-labels of any other element of [st]_r could have
-        // been used instead. Some other choice may, indeed, lead
-        // to a smaller DFA.This approach is used for simplicity.
-        int it;
-        // Iterate over the labels, constructing the transitions.
-        for (it = 0; !a.iter_end(it); it++)
-        {
-            b = a.iterator(it);
-            ret.T.add_transition(stprime, b, newnames.lookup(T.transition_on_range(st, b)));
-        }
-    // st's eq. class may be final.
-    if (F.contains(st)) ret.F.add(stprime);
-    }
+    b = a.iterator(it);
+    ret.T.add_transition(stprime, b, newnames.lookup(T.transition_on_range(st, b)));
 }
 \end{lstlisting}
 
@@ -282,7 +263,7 @@ for (st = 0; st < Q.size(); st++)
 }
 \end{lstlisting}
 
-在代码 \ref{lst:DFA_usefulf_2} 中，在添加新的转移关系之前判断状态是否都是有效状态，更改后为代码 \ref{lst:DFA_usefulf_2_edit}
+在代码 \ref{lst:DFA_usefulf_2} 中，在添加新的转移关系之前判断当前状态和目标状态是否都是有效状态，若都为有效状态，则添加新的转移关系。更改后为代码 \ref{lst:DFA_usefulf_2_edit}
 \lstset{style=mystyle}
 \begin{lstlisting}[language=C++,label={lst:DFA_usefulf_2_edit},caption={ 更改后的 DFA.cpp },firstnumber=133]
     State stdest;                                           // 新增
@@ -290,10 +271,134 @@ for (st = 0; st < Q.size(); st++)
 
     if (stprime != Invalid &&  stdest != Invalid)           // 新增
     {                                                       // 新增
-        ret.T.add_transition(stprime, b, stdest));          // 更改
+        ret.T.add_transition(stprime, b, stdest));          // 修改
     }                                                       // 新增
 \end{lstlisting}
 
-更改后函数 DFA::usefulf() 成功将图 \ref{fig:DFA4_0} 转换成图 \ref{fig:DFA4_1} 。
+更改后函数 DFA::usefulf() 成功移除图 \ref{fig:DFA4_0} 中的陷阱状态 $q_5$ ，将图 \ref{fig:DFA4_0} 转换成图 \ref{fig:DFA4_1}。
+更改后函数 DFA::usefulf() 成功移除图 \ref{fig:usefulf2-1} 中的陷阱状态 $q_1$ ，将图 \ref{fig:usefulf2-1} 转换成图 \ref{fig:usefulf2-2} 。
 
-\section{函数 DFA::min\_opcroft() 运行结果错误}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{函数 DFA::min\_Hopcroft() 运行错误}
+
+% Hopcroft 算法描述如下\cite{watson1993taxonomyb} \\
+% {\small \setlength{\parskip}{1em}
+% \rule{\textwidth}{1pt}
+% \mbox{　} $P:=[Q]_{E_0}$; \\
+% \mbox{　} $L:= ( \mbox{\textbf{if }} ( |F| \leq |Q \setminus F | ) \mbox{\textbf{then }} \{F\} \mbox{\textbf{else }} \{ Q \setminus F \} \mbox{\textbf{fi }} ) \times V $; \\
+% \mbox{　} $ \{ \mbox{恒有: } [Q]_E \sqsubseteq P \sqsubseteq [Q]_{E_0} \land L \subseteq (P \times V) $ \\
+% \mbox{　　　} $ \land (\forall Q_0,Q_1,a:Q_0 \in Q \land (Q_1,a) \in L : \neg Splittable (Q_0,Q_1,a)) \Rightarrow (P=[Q]_E) \} $ \\
+% \mbox{　} $ \mbox{\textbf{do }} L \not= \emptyset \longrightarrow $ \\ 
+% \mbox{　　　} $ \mbox{\textbf{let }} Q_1,a:(Q_1,a) \in L $; \\
+% \mbox{　　　} $ P_{old} := P $; \\
+% \mbox{　　　} $ L := L \setminus \{ (Q_1,a) \} $; \\
+% \mbox{　　　} $ \{  \mbox{恒有: } [Q]_E \sqsubseteq P \sqsubseteq P_{old} \} $ \\
+% \mbox{　　　} $ \mbox{\textbf{for }} Q_0 : Q_0 \in P_{old} \land Splittable (Q_0,Q_1,a) \mbox{\textbf{ do }} $ \\
+% \mbox{　　　　　} $ Q'_0 := \{ p:p \in Q_0 \land T(p,a) \in Q_1 \} $; \\
+% \mbox{　　　　　} $ P:= P \setminus \{ Q_0 \} \cup \{ Q_0 \setminus Q'_0,b \} $;\\
+% \mbox{　　　　　} $ \mbox{\textbf{for }} b:b \in V \mbox{\textbf{ do }} $ \\
+% \mbox{　　　　　　　} $ \mbox{\textbf{if }} (Q_0,b) \in L \rightarrow L := L \setminus \{ (Q_0,b) \} \cup \{ (Q'_0,b),(Q_0, \setminus Q'_0,b ) \} $;\\ 
+% \mbox{　　　　　　　} $ \talloblong (Q_0,b) \notin L \rightarrow $ \\
+% \mbox{　　　　　　　　　} $ L := L \cup (\mbox{\bfseries if} ( |Q'_0| \leq |Q_0 \setminus Q'_0| ) \mbox{\bfseries then} \{ (Q'_0 , b) \} \mbox{\bfseries else} \{ ( Q'_0 \setminus Q'_0,b ) \} \mbox{\bfseries fi} ) $ \\
+% \mbox{　　　　　　　} $ \mbox{\textbf{fi}} $ \\
+% \mbox{　　　　　} $ \mbox{\textbf{rof}} $ \\
+% \mbox{　　　} $ \mbox{\textbf{rof}} $ \\
+% \mbox{　　　} $ \{ (\forall Q_0,Q_0 \in P : \neg Splittable(Q_0,Q_1,a)) \} $ \\
+% \mbox{　} $ \mbox{\textbf{od }} \{ P = [Q]_E \} $ \\
+% \rule{\textwidth}{1pt} }
+
+实例化如表 \ref{tab:DFA411-1} 所示的自动机。（含有初始不可达状态\footnote{从开始状态不可以到达的状态，如图 \ref{fig:DFA11-0} 中状态 $q_9$ 。}（start-unreachable））
+
+\begin{table}[!htbp]
+    \caption{图\ref{fig:DFA11-0}的转移函数}
+    \label{tab:DFA411-1}
+    \centering
+    \small% fontsize
+    \setlength{\tabcolsep}{4pt}% column separation
+    \renewcommand{\arraystretch}{1.2}%row space 
+    %\begin{tabular}{lcrr} 
+        \begin{tabular}{l p{4em}<{\centering} p{3em}<{\centering} p{3em}<{\centering}}
+        \toprule %\hline 
+        \multirow{2}{*}{状态说明} & \multirow{2}{*}{状态} & \multicolumn{2}{c}{输入字符} \\
+		\cline{3-4}      &    &$0$ & $1$  \\
+        \midrule%\hline
+        开始状态(start)  & $q_0$ & $q_1$   & $q_2$   \\
+                        & $q_1$ & $q_5$   & $q_2$   \\
+                        & $q_2$ & $q_3$   & $q_6$   \\
+                        & $q_3$ & $q_2$   & $q_4$   \\
+        结束状态(accept) & $q_4$ & $q_8$   & $q_1$   \\
+                        & $q_5$ & $q_1$   & $q_6$   \\
+                        & $q_6$ & $q_7$   & $q_2$   \\
+                        & $q_7$ & $q_6$   & $q_8$   \\
+        结束状态(accept) & $q_8$ & $q_5$   & $q_4$   \\
+        初始不可达状态    & $q_9$ & $q_7$   & $q_5$   \\
+        \bottomrule%\hline 
+    \end{tabular}
+\end{table}
+
+函数 DFA::min\_Hopcroft() 是 Hopcroft 算法在 FIRE engine 中的实现，Hopcroft 算法在文中\cite{watson1993taxonomyb}描述如下：
+\begin{figure}[!htbp]
+    \centering
+        \includegraphics[width=0.99\textwidth]{hopcroft}
+\end{figure}
+
+\subsection{运行结果}\label{sec:hopcroft-error}
+执行函数 DFA::min\_Hopcroft()，程序在文件CRSet.h，第 146 行的 “assert(!iter\_end(it))” 处触发 assert 中止，如代码 \ref{lst:iterend} 所示。调用函数“CRSet::iterator()”的地方为文件min-hop.cpp，第103行，“State r(split(p, q, C.iterator(L[q]), P));”的“C.iterator(L[q])”处。
+\lstset{style=mystyle}
+\begin{lstlisting}[language=C++,label={lst:iterend},caption={ CRSet.h },firstnumber=142]
+// Fetch the it'th CharRange in *this.
+inline const CharRange& CRSet::iterator(const int it) const
+{
+    assert(class_invariant());
+    assert(!iter_end(it));
+    return(data[it]);
+}
+
+// Is there even in it'th CharRange?
+inline int CRSet::iter_end(const int it) const
+{
+    assert(class_invariant());
+    assert(0 <= it);
+    return(it >= in_use);
+}
+\end{lstlisting}
+
+\subsection{错误原因}
+
+以表 \ref{tab:DFA411-1} 中实例化的自动机为例，CRSet 变量 C = \{ 0, 1\}，在程序中止处打断点，调试至此处可看到 int 变量 it 为 “2”，因 C 中只有两个值 “1、2”，所以传入参数为 “2” 时，超出可以 C 的范围，于是在语句 “assert(!iter\_end(it));” 处导致程序中止。
+
+算法迭代过程如表 \ref{tab:hopcroft} 所示。
+
+在第 11 次迭代中，DFA::split() 函数将等价类\{0,1,5\} 分割为等价类 \{\{0\},\{1,5\}\}，此时$p=0,q=0,r=1$，满足条件$|Q'_0| \leq | Q_0 \setminus Q'_0 |$，执行 L[r] = L[p] =1，L[p] = C.size() = 2。在第 12 次迭代中，由于第 11 次迭代中 $p=q$ ，所以 L[q] 的值将被更改为 “2”，于是在 C.iterator(L[q]) 处传入一个超过 C 的范围的值，程序触发 assert 中止。
+
+\subsection{解决方法}
+
+函数 DFA::min\_Hopcroft() 的主要实现部分如代码 \ref{lst:hopcroft-iter}。
+\lstset{style=mystyle}
+\begin{lstlisting}[language=C++,label={lst:hopcroft-iter},caption={ min-hop.cpp },firstnumber=100]
+    for (repr.iter_start(p); !repr.iter_end(p); repr.iter_next(p))
+    {
+        //分割等价类
+        ……
+    }
+\end{lstlisting}
+
+在分割等价类之前，判断 L[q] 是否等于 “C.size()”，若是，则减去 “1”，更改后的代码如 \ref{lst:hopcroft-iter-edit}
+
+\lstset{style=mystyle}
+\begin{lstlisting}[language=C++,label={lst:hopcroft-iter-edit},caption={ min-hop.cpp },firstnumber=100]
+    for (repr.iter_start(p); !repr.iter_end(p); repr.iter_next(p))
+    {
+        if(L[q] == C.size()) // 新增
+        {                   // 新增
+            L[q]--;         // 新增
+        }                   // 新增
+        //分割等价类
+        ……
+    }
+\end{lstlisting}
+
+更改后函数 DFA::min\_Hopcroft() 运行成功。
