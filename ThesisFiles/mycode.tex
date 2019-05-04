@@ -1,0 +1,48 @@
+%!TEX root = ../Demo.tex
+\chapter{代码}
+
+一个实例化 DFA 类的例子如代码 \ref{lst:DFASample} 所示。代码 \ref{lst:DFASample} 中执行了 DFA::usefulf() 函数，去除多余的状态，让输出数据与原始数据相对应。代码 \ref{lst:DFASample} 对应的 DFA 为图 \ref{tab:DFA1} 。
+
+
+\lstset{style=mystyle}
+\begin{lstlisting}[language=C++,label={lst:DFASample},caption={实例化DFA示例}]
+#include"DFA.h"
+#include<iostream>
+int main()
+{
+    DFA_components dfa_com1;
+
+    // StateSet S  开始状态集
+    dfa_com1.S.set_domain(10);
+    dfa_com1.S.add(0);
+
+    // StateSet F  结束状态集
+    dfa_com1.F.set_domain(10);
+    dfa_com1.F.add(3);
+
+    // StatePool Q 
+    int i = 10;
+    while (i--)
+    {
+        dfa_com1.Q.allocate();
+    }
+
+    // DTransRel T transition             
+    dfa_com1.T.set_domain(10);
+    dfa_com1.T.add_transition(0, '0', 1);
+    dfa_com1.T.add_transition(1, '0', 2);
+    dfa_com1.T.add_transition(2, '0', 3);
+    dfa_com1.T.add_transition(3, '0', 3);
+    dfa_com1.T.add_transition(0, '1', 0);
+    dfa_com1.T.add_transition(1, '1', 0);
+    dfa_com1.T.add_transition(2, '1', 0);
+    dfa_com1.T.add_transition(3, '1', 0);
+
+    DFA dfa1(dfa_com1);
+    dfa1.usefulf();
+
+    std::cout<<dfa1<<std::endl;
+	
+    return 0;
+}
+\end{lstlisting}

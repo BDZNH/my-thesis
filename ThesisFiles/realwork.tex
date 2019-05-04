@@ -1,7 +1,7 @@
 %!TEX root = ../Demo.tex
 \chapter{测试内容}
 
-本章内容为测试过程中发现的问题，以及如何修复（部分）这些问题。
+本章内容为测试结果、测试过程中发现的问题、以及如何修复（部分）这些问题。
 
 % \begin{remark}
 %     因为$DFA$的最小化建立在状态等价性的基础之上，所以本文并未专门针对等价性进行测试。    
@@ -10,7 +10,7 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{无限循环}
+\section{无限循环}\label{sec:ohloop}
 
 实例化一个如表 \ref{tab:DFA4} 的 DFA 的对象之后，调用函数 DFA::min\_Watson()。（表 \ref{tab:DFA4} 对应的状态转移图为图 \ref{fig:DFA4_0}，含有陷阱状态 $q_5$ \footnote{进入此状态之后无法通过任何转移离开，如图 \ref{fig:DFA4_0} 中的状态 {$q_5$}。} ）
 
@@ -106,7 +106,7 @@ for (oldq->iter_start(i); !oldq->iter_end(i); oldq->iter_next(i))
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{函数 DFA::usefulf() 运行错误}
+\section{函数 DFA::usefulf() 运行错误}\label{sec:usefulf}
 
 “\verb+DFA::usefulf()+”函数为一个重要函数。用于去除有限自动机中的非“final-reachable”状态，在执行最小化算法前执行该函数，可以去除有限自动机中的非“final-reachable”状态，进而减少程序运行时间。其定义如代码 \ref{lst:usefulf}
 \lstset{style=mystyle}
@@ -144,7 +144,7 @@ DFA& usefulf();
 % {\bfseries 运行结果}
 \subsection{运行结果}
 
-执行函数“DFA::usefulf()”后状态 $q_5$ 被去除，则函数功能成功执行。但是在实际的执行过程中，程序提示如图 \ref{fig::usefulf_error} 错误 
+执行函数“DFA::usefulf()”后若状态 $q_5$ 被去除，则函数定义功能正常执行。但是在实际的执行过程中，程序提示如图 \ref{fig::usefulf_error} 错误 
 
 \begin{figure}[!htbp]
     \centering
@@ -210,7 +210,7 @@ for (it = 0; !a.iter_end(it); it++)
 }
 \end{lstlisting}
 
-根据代码 \ref{lst:TransImple} ，可以知道程序中止的地方为代码 \ref{lst:DFA_usefulf_2}，134 行。其中 State 变量为当前需要进行操作的状态，CharRange 变量 b 为当前状态转移输入字符。查看 T.
+根据代码 \ref{lst:TransImple} ，可以知道程序中止的地方为代码 \ref{lst:DFA_usefulf_2}，133 行。其中 State 变量为当前需要进行操作的状态，CharRange 变量 b 为当前状态转移输入字符。查看 T.
 transition\_on\_range(st, b)) 的实现，如代码 \ref{lst:transition_on_range}
 \lstset{style=mystyle}
 \begin{lstlisting}[language=C++,label={lst:transition_on_range},caption={ DTransRel.cpp },firstnumber=108]
@@ -282,7 +282,7 @@ for (st = 0; st < Q.size(); st++)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{函数 DFA::min\_Hopcroft() 运行错误}
+\section{函数 DFA::min\_Hopcroft() 运行错误}\label{sec:hopcroft}
 
 % Hopcroft 算法描述如下\cite{watson1993taxonomyb} \\
 % {\small \setlength{\parskip}{1em}
@@ -386,19 +386,33 @@ inline int CRSet::iter_end(const int it) const
     }
 \end{lstlisting}
 
-在分割等价类之前，判断 L[q] 是否等于 “C.size()”，若是，则减去 “1”，更改后的代码如 \ref{lst:hopcroft-iter-edit}
+在分割等价类之前，判断 L[q] 是否等于 “C.size()”，若是，则减去 “1”，更改后为代码 \ref{lst:hopcroft-iter-edit}
 
 \lstset{style=mystyle}
 \begin{lstlisting}[language=C++,label={lst:hopcroft-iter-edit},caption={ min-hop.cpp },firstnumber=100]
     for (repr.iter_start(p); !repr.iter_end(p); repr.iter_next(p))
     {
         if(L[q] == C.size()) // 新增
-        {                   // 新增
-            L[q]--;         // 新增
-        }                   // 新增
+        {                    // 新增
+            L[q]--;          // 新增
+        }                    // 新增
         //分割等价类
         ……
     }
 \end{lstlisting}
 
-更改后函数 DFA::min\_Hopcroft() 运行成功。
+更改后函数 DFA::min\_Hopcroft() 运行不再中止。
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{测试结果汇总}
+
+经过 \ref{sec:ohloop} 节、\ref{sec:usefulf} 节和 \ref{sec:hopcroft} 节的修改，FIRE engine 中的最小化算法及最小化算法用到的帮助函数都可以成功运行。本节内容为测试正确的结果和一些未能解决的问题的汇总。
+
+\subsection{不改变已经是最小的 DFA 接受的 $\mathcal{L}$}
+
+\begin{property}\label{sec:keepMin}
+    接受一个 $\mathcal{L}$ 的最小的 DFA 是唯一的，最小的且接受相同 $\mathcal{L}$ 的 DFA 仅仅在状态命名上有差别\cite{book1}。由此我们可以知道，最小化算法不能使最小的 DFA 接受的 $\mathcal{L}$ 发生改变。
+\end{property}
+
+对于性质 \ref{sec:keepMin} ，测试结果如下
