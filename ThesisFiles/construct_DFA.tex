@@ -334,12 +334,6 @@ const State Invalid = -1;
     \small% fontsize
     \setlength{\tabcolsep}{4pt}% column separation
     \renewcommand{\arraystretch}{1.2}%row space 
-    % \begin{tabular}{cc|p{3em}<{\centering} p{3em}<{\centering}} 
-    %     \hline 
-    %     \multirow{2}*{\bfseries 状态说明} & \multirow{2}*{\bfseries 状态} & \multicolumn{2}{c}{\bfseries 输入字符} \\
-    %     %                        &        & \multicolumn{2}{c}{输入字符} \\
-    %     \cline{3-4}    &  &    $0$ & $1$     \\
-    %     \hline
     \begin{tabular}{l p{3em}<{\centering} p{3em}<{\centering} p{3em}<{\centering}}
         \toprule %\hline 
         \multirow{2}{*}{状态说明} & \multirow{2}{*}{状态} & \multicolumn{2}{c}{输入字符} \\
@@ -398,7 +392,7 @@ const State Invalid = -1;
 % }
 % \end{lstlisting}
 
-代码\ref{lst:DFASample}将在控制台输出如下信息：
+代码 \ref{lst:DFASample} 将在控制台输出如下信息：
 \lstset{style=mystyle}
 \begin{lstlisting}[language=C++,label={lst:DFASampleLog},caption={图\ref{fig:DFA1}中自动机在 FIRE engine 中的表现形式}]
 DFA

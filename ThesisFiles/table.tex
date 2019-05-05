@@ -1,7 +1,7 @@
 %!TEX root = ../Demo.tex
 \chapter{算法迭代过程}
 \begin{table}[!htbp]
-    \caption{图\ref{fig:DFA11-0}中DFA在Hopcroft算法中的迭代过程}
+    \caption{图\ref{fig:DFA11-0}的 DFA 在 DFA::min\_Hopcroft 算法中的迭代过程}
     \label{tab:hopcroft}
     \centering
     \footnotesize% fontsize
@@ -59,12 +59,12 @@
 图 \ref{tab:hopcroft} 中的表头与 FIRE engine 中 Hopcroft 算法的实现中的变量一一对应。其中
 \begin{itemize}
     \item $n$ 为迭代次数；
-    \item “状态”意指进行等价类分割前和分割后；
+    \item “状态”意指进行等价类分割前和等价类分割后；
     \item $p$ 为当前要进行等价类分割的等价类；
     \item $q$ 为等价类分割的参数，$q \in Q$；
     \item L[q] 作为函数 C.iterator(L[q]) 的参数；
     \item $C$ 为等价类分割的参数，$C \in V$；
-    \item $r$ 为分割后的等价类的代表；
+    \item $r$ 为分割开的等价类的代表；
     \item $L$ 为 Hopcroft 算法中的 $L$；
     \item $repr$ 为 等价类代表集合，其值为 $P$ 中每个等价类中最小的状态的集合；
     \item $P$ 为等价类集合；
