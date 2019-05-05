@@ -29,9 +29,9 @@
         \midrule%\hline
         开始状态(start)  & $q_0$ & $q_1$   & $q_2$   \\
                         & $q_1$ & $q_0$   & $q_3$   \\
-        结束状态(accept) & $q_2$ & $q_4$   & $q_5$   \\
-        结束状态(accept) & $q_3$ & $q_4$   & $q_5$   \\
-        结束状态(accept) & $q_4$ & $q_4$   & $q_5$   \\
+        结束状态(final) & $q_2$ & $q_4$   & $q_5$   \\
+        结束状态(final) & $q_3$ & $q_4$   & $q_5$   \\
+        结束状态(final) & $q_4$ & $q_4$   & $q_5$   \\
         陷阱状态(sink) & $q_5$ & $q_5$   & $q_5$   \\
         \bottomrule%\hline 
     \end{tabular}
@@ -133,9 +133,9 @@ DFA& usefulf();
         \midrule%\hline
         开始状态(start)  & $q_0$ & $q_1$   & $q_2$   \\
                         & $q_1$ & $q_0$   & $q_3$   \\
-        结束状态(accept) & $q_2$ & $q_4$   & -   \\
-        结束状态(accept) & $q_3$ & $q_4$   & -   \\
-        结束状态(accept) & $q_4$ & $q_4$   & -   \\
+        结束状态(final) & $q_2$ & $q_4$   & -   \\
+        结束状态(final) & $q_3$ & $q_4$   & -   \\
+        结束状态(final) & $q_4$ & $q_4$   & -   \\
         \bottomrule%\hline 
     \end{tabular}
 \end{table}
@@ -329,11 +329,11 @@ for (st = 0; st < Q.size(); st++)
                         & $q_1$ & $q_5$   & $q_2$   \\
                         & $q_2$ & $q_3$   & $q_6$   \\
                         & $q_3$ & $q_2$   & $q_4$   \\
-        结束状态(accept) & $q_4$ & $q_8$   & $q_1$   \\
+        结束状态(final) & $q_4$ & $q_8$   & $q_1$   \\
                         & $q_5$ & $q_1$   & $q_6$   \\
                         & $q_6$ & $q_7$   & $q_2$   \\
                         & $q_7$ & $q_6$   & $q_8$   \\
-        结束状态(accept) & $q_8$ & $q_5$   & $q_4$   \\
+        结束状态(final) & $q_8$ & $q_5$   & $q_4$   \\
         初始不可达状态    & $q_9$ & $q_7$   & $q_5$   \\
         \bottomrule%\hline 
     \end{tabular}
@@ -370,7 +370,7 @@ inline int CRSet::iter_end(const int it) const
 
 以表 \ref{tab:DFA411-1} 中实例化的自动机为例，CRSet 变量 C = \{ 0, 1\}，在程序中止处打断点，调试至此处可看到 int 变量 it 为 “2”，因 C 中只有两个值 “1、2”，所以传入参数为 “2” 时，超出可以 C 的范围，于是在语句 “assert(!iter\_end(it));” 处导致程序中止。
 
-算法迭代过程如表 \ref{tab:hopcroft} 所示。
+算法迭代过程如附录表 \ref{tab:hopcroft} 所示。
 
 在第 11 次迭代中，DFA::split() 函数将等价类\{0,1,5\} 分割为等价类 \{\{0\},\{1,5\}\}，此时$p=0,q=0,r=1$，满足条件$|Q'_0| \leq | Q_0 \setminus Q'_0 |$，执行 L[r] = L[p] =1，L[p] = C.size() = 2。在第 12 次迭代中，由于第 11 次迭代中 $p=q$ ，所以 L[q] 的值将被更改为 “2”，于是在 C.iterator(L[q]) 处传入一个超过 C 的范围的值，程序触发 assert 中止。
 
@@ -488,7 +488,7 @@ inline int CRSet::iter_end(const int it) const
 
 \subsection{最小化功能测试}
 
-本节内容为最小化算法对定义功能的测试汇总。
+本节内容为最小化算法对定义功能的测试，以表 \ref{tab:MinData} 中的数据对五个最小化算法进行测试，结果如表 \ref{tab:MinResult} 所示。
 
 \begin{table}[!htbp]
     \caption{一组 DFA}
@@ -590,8 +590,8 @@ current = -1
             %\cline{2-9}% partial hline from column i to column j
             \midrule%\hline
             开始状态(start)  & $q_0$ & $q_1$   & $q_2$   \\
-            结束状态(accept) & $q_1$ & $q_2$   &     -   \\
-            结束状态(accept) & $q_2$ & -       & $q_1$   \\
+            结束状态(final) & $q_1$ & $q_2$   &     -   \\
+            结束状态(final) & $q_2$ & -       & $q_1$   \\
             \bottomrule%\hline
         \end{tabular}
     \end{subtable}
@@ -607,12 +607,30 @@ current = -1
             %\cline{2-9}% partial hline from column i to column j
             \midrule%\hline
             开始状态(start)  & $q_0$ & $q_1$   & $q_1$   \\
-            结束状态(accept) & $q_1$ & $q_1$   & -   \\
+            结束状态(final) & $q_1$ & $q_1$   & -   \\
+            & & & \\
             \bottomrule%\hline
         \end{tabular}
     \end{subtable}
 \end{table}
 
-图 \ref{fig:DFAMin-3-1} 原本是一个最小的 DFA，由表 \ref{tab:sample_3} 可知，函数算法 “DFA::min\_Hopcroft()” 已经改变了图 \ref{fig:DFAMin-3-1} 的状态数，由 “3” 变到 “2”，已经不满足性质 \ref{sec:keepMin} 。由此可以认为 FIRE engine 中算法 “DFA::min\_Hopcroft()” 未完成其定义功能。
+图 \ref{fig:DFAMin-3-1} 原本是一个最小的 DFA，由表 \ref{tab:sample_3} 可知，函数算法 “DFA::min\_Hopcroft()” 已经改变了图 \ref{fig:DFAMin-3-1} 的状态数，由 “3” 变到 “2”， 如图 \ref{fig:DFAMinHoop-3} 所示，已经不满足性质 \ref{sec:keepMin}。由此可以认为 FIRE engine 中算法 “DFA::min\_Hopcroft()” 未完成其定义功能。
 
-对于算法 “DFA::min\_Hopcroft()” 和算法 “DFA::min\_Brzozowski” 的额外测试见附录。
+\begin{figure}[!htbp]
+    \centering
+    \begin{subfigure}[b]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{Min/DFAMinTest-3-1}
+        \caption{}
+        \label{fig:DFAMin-3-1-inside}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[b]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{Min/DFAMinTest-3-3}
+        \caption{}
+        \label{fig:DFAMin-3-3-inside}
+    \end{subfigure}
+    \caption{DFA::min\_Hopcroft 算法使图 (a) 中的最小的 DFA 转换成了图 (B) 中的 DFA}
+    \label{fig:DFAMinHoop-3}
+  \end{figure}
+
+对于算法 “DFA::min\_Hopcroft()” 和算法 “DFA::min\_Brzozowski” 的扩展测试见附录。
