@@ -3,7 +3,7 @@
 本文总结如下
 \begin{enumerate}
     \item 对于 DFA 中的陷阱状态，可以使用函数 “DFA::usefulf()” 去除；
-    \item 除了算法 DFA::min\_Brzozowski() ，其他算法都不能去除 DFA 中的初始不可达状态（start-unreachable）；
+    \item 除了算法 DFA::min\_Brzozowski() ，其他算法都不能去除 DFA 中的开始不可达状态（start-unreachable）；
     \item 由于算法 DFA::min\_Brzozowski() 在某些情况下，会改变最小的 DFA 接受的语言，所以本文认为 FIRE engine 中对 Brzozowski 算法的实现还有不足的地方；
     \item 对函数 DFA::usefulf() 的修改有较高可信度，详见第 \ref{sec:usefulf} 节;
     \item 算法 DFA::min\_Hopcroft() 在多个样例中输出与预期不符，本文认为 FIRE engine 对 Hopcroft 算法的实现仍有不足；

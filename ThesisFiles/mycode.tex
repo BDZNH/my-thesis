@@ -13,11 +13,11 @@ int main()
     DFA_components dfa_com1;
 
     // StateSet S  开始状态集
-    dfa_com1.S.set_domain(10);
+    dfa_com1.S.set_domain(4);
     dfa_com1.S.add(0);
 
     // StateSet F  结束状态集
-    dfa_com1.F.set_domain(10);
+    dfa_com1.F.set_domain(4);
     dfa_com1.F.add(3);
 
     // StatePool Q 
@@ -28,7 +28,7 @@ int main()
     }
 
     // DTransRel T transition             
-    dfa_com1.T.set_domain(10);
+    dfa_com1.T.set_domain(4);
     dfa_com1.T.add_transition(0, '0', 1);
     dfa_com1.T.add_transition(1, '0', 2);
     dfa_com1.T.add_transition(2, '0', 3);
@@ -39,7 +39,6 @@ int main()
     dfa_com1.T.add_transition(3, '1', 0);
 
     DFA dfa1(dfa_com1);
-    dfa1.usefulf();
 
     std::cout<<dfa1<<std::endl;
 	

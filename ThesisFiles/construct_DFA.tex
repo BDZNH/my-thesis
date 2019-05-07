@@ -1,4 +1,4 @@
-\chapter{实例化类DFA对象}
+\chapter{类 DFA 及相关类的设计}
 
 \section{DFA类}
 在本文中，我们仅仅对 DFA 应用最小化算法，FIRE engine 中的DFA类为应用最小化算法的类。
@@ -44,8 +44,8 @@ FIRE engine 提供了多种方式构造一个 DFA，类 DFA 的部分实现如�
         名称& 类型 & 属性  &\mbox{说明} \\
         \midrule
         Q & StatePool & protected &          \\
-        S & StateSet  & protected &  $S\in Q$ \\
-        F & StateSet  & protected &  $F\in Q$\\
+        S & StateSet  & protected &  $S\subseteq Q$ \\
+        F & StateSet  & protected &  $F\subseteq Q$\\
         T & DTransRel & protected &  转移关系\\
         \midrule 
         DFA(const DFA\_components\& r);& & public &构造函数 \\
@@ -82,7 +82,7 @@ FIRE engine 提供了多种方式构造一个 DFA，类 DFA 的部分实现如�
 
 从“DFA\_components”构造一个$DFA$对象是最简单直接的方法，观察“DFA\_components”的实现，如表\ref{tab:DFA-components}所示
 \begin{table}[!htbp]
-    \caption{DFA\_components}
+    \caption{结构体 DFA\_components}
     \label{tab:DFA-components}
     \centering
     \small% fontsize
@@ -91,13 +91,13 @@ FIRE engine 提供了多种方式构造一个 DFA，类 DFA 的部分实现如�
     %\begin{tabular}{lcrr} 
         \begin{tabular}{p{3em}<{\centering} p{5em}<{\raggedright} p{5em}<{\raggedright}} %l p{4em}<{\centering} p{3em}<{\centering} p{3em}<{\centering}
         \toprule 
-         \multicolumn{3}{c}{结构体 DFA\_components} \\
+         \multicolumn{3}{c}{struct DFA\_components} \\
         \midrule
         名称& 类型 & \mbox{说明} \\
         \midrule
         Q & StatePool &           \\
-        S & StateSet  &  $S\in Q$ \\
-        F & StateSet  &  $F\in Q$ \\
+        S & StateSet  &  $S\subseteq Q$ \\
+        F & StateSet  &  $F\subseteq Q$ \\
         T & DTransRel &  转移关系  \\
         \bottomrule
     \end{tabular}
@@ -220,7 +220,7 @@ StatePool类的部分实现如表 \ref{tab:Class-StatePool} （文件$StatePool.
 
 \subsection{DTransRel 类}
 
-类$DTransRel$是$DFA$的一个重要成员，它存储了$DFA$的状态转移关系，最小化算法中用到的等价类分割、等价状态合并等功能都与这个类息息相关。类 DTransRel 的部分实现如表 tab:Class-DTransRel 所示（文件$DTransRel.h$）：
+类$DTransRel$是$DFA$的一个重要成员，它存储了$DFA$的状态转移关系，最小化算法中用到的等价类分割、等价状态合并等功能都与这个类息息相关。类 DTransRel 的部分实现如表 \ref{tab:Class-DTransRel} 所示（文件$DTransRel.h$）：
 % \lstset{style=mystyle}
 % \begin{lstlisting}[language=C++,label={lst:DTransRel},caption={DTransRel}]
 % // Implement a deterministic transition relation, as a function from States time

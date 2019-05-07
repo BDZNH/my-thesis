@@ -56,22 +56,45 @@
     \label{fig:DFAMin-3}
   \end{figure}
 
+  \begin{figure}[!htbp]
+    \centering
+    \begin{subfigure}[b]{0.9\textwidth}
+        \includegraphics[width=\textwidth]{Min/DFAMinTest-5-0}
+        \caption{}
+        \label{fig:DFAMin-5-0}
+    \end{subfigure}
+    \\
+    \begin{subfigure}[b]{0.9\textwidth}
+        \includegraphics[width=\textwidth]{Min/DFAMinTest-5-1}
+        \caption{}
+        \label{fig:DFAMin-5-1}
+    \end{subfigure}
+    \\
+    \begin{subfigure}[b]{0.9\textwidth}
+        \includegraphics[width=\textwidth]{Min/DFAMinTest-5-2}
+        \caption{}
+        \label{fig:DFAMin-5-2}
+    \end{subfigure}
+    \caption{(a)一个 DFA； (b) 图(a)去除转移关系$T=\{(4 \times \mbox{'1'} \times 4),( 8 \times \mbox{'0'} \times 8 )\}$ 后的最小的 DFA ； (c) 与图(a) 同构的最小的 DFA }
+    \label{fig:DFAMin-5}
+  \end{figure}
+
 
   \begin{figure}[!htbp]
     \centering
-    \begin{subfigure}[b]{0.6\textwidth}
+    \begin{subfigure}[b]{0.7\textwidth}
         \includegraphics[width=\textwidth]{Min/DFAMinTest-4-0}
         \caption{}
         \label{fig:DFAMin-4-0}
     \end{subfigure}
     \\
-    \begin{subfigure}[b]{0.6\textwidth}
+    \begin{subfigure}[b]{0.7\textwidth}
         \includegraphics[width=\textwidth]{Min/DFAMinTest-4-1}
         \caption{}
         \label{fig:DFAMin-4-1}
     \end{subfigure}
     \\
-    \begin{subfigure}[b]{0.6\textwidth}
+    \begin{subfigure}[b]{0.7\textwidth}
         \includegraphics[width=\textwidth]{Min/DFAMinTest-4-2}
         \caption{}
         \label{fig:DFAMin-4-2}
@@ -98,28 +121,7 @@
 \end{figure}
 
 
-\begin{figure}[!htbp]
-  \centering
-  \begin{subfigure}[b]{0.6\textwidth}
-      \includegraphics[width=\textwidth]{DFA11-0}
-      \caption{}
-      \label{fig:DFA11-0}
-  \end{subfigure}
-  \\
-  \begin{subfigure}[b]{0.6\textwidth}
-      \includegraphics[width=\textwidth]{DFA11-1}
-      \caption{}
-      \label{fig:DFA11-1}
-  \end{subfigure}
-  \\
-  \begin{subfigure}[b]{0.6\textwidth}
-      \includegraphics[width=\textwidth]{DFA11-2}
-      \caption{}
-      \label{fig:DFA11-2}
-  \end{subfigure}
-  \caption{(a)一个DFA；  (b) 图(a) 去除 “start-unreachable” 状态 {$q_9$}；(c) 图(a)移除转移关系$T=\{(4 \times '1' \times 1),(8 \times '0' \times 5),(3 \times '0' \times 2),(7 \times '0' \times 6)\}$后的DFA。 }
-  \label{fig:DFA11}
-\end{figure}
+
 
 \begin{figure}[!htbp]
     \centering
@@ -134,7 +136,7 @@
         \caption{}
         \label{fig:keepMin-1-nonTheState}
     \end{subfigure}
-    \caption{(a)接受{$\mathcal{L}=\{ x000 | x \in \{ 0,1\}^{*} \}$}的最小的 DFA；  (b) 图(a)去除初始不可达状态 {$q_1$}； }
+    \caption{(a)接受{$\mathcal{L}=\{ x000 | x \in \{ 0,1\}^{*} \}$}的最小的 DFA；  (b) 图(a)去除开始不可达状态 {$q_1$}； }
     \label{fig:keepMin-1}
 \end{figure}
 
@@ -151,6 +153,29 @@
         \caption{}
         \label{fig:keepMin-2-nonTheState}
     \end{subfigure}
-    \caption{(a)接受{$\mathcal{L}=\{ x000 | x \in \{ 0,1\}^{*} \cup \{ x001 | x \in \{ 0,1\}^{*} \}$}的最小的 DFA；  (b) 图(a)去除初始不可达状态 {$q_5$}； }
+    \caption{(a)接受{$\mathcal{L}=\{ x000 | x \in \{ 0,1\}^{*} \cup \{ x001 | x \in \{ 0,1\}^{*} \}$}的最小的 DFA；  (b) 图(a)去除开始不可达状态 {$q_5$}； }
     \label{fig:keepMin-2}
 \end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \begin{subfigure}[b]{0.9\textwidth}
+        \includegraphics[width=\textwidth]{DFA11-0}
+        \caption{}
+        \label{fig:DFA11-0}
+    \end{subfigure}
+    \\
+    \begin{subfigure}[b]{0.9\textwidth}
+        \includegraphics[width=\textwidth]{DFA11-1}
+        \caption{}
+        \label{fig:DFA11-1}
+    \end{subfigure}
+    \\
+    \begin{subfigure}[b]{0.9\textwidth}
+        \includegraphics[width=\textwidth]{DFA11-2}
+        \caption{}
+        \label{fig:DFA11-2}
+    \end{subfigure}
+    \caption{(a)一个最小的DFA；  (b) 图(a) 移除开始不可达状态 {$q_9$}；(c) 图(a)移除转移关系$T=\{(4 \times '1' \times 1),(8 \times '0' \times 5),(3 \times '0' \times 2),(7 \times '0' \times 6)\}$后的DFA。 }
+    \label{fig:DFA11}
+  \end{figure}

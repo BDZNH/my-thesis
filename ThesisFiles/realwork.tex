@@ -108,7 +108,7 @@ for (oldq->iter_start(i); !oldq->iter_end(i); oldq->iter_next(i))
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{函数 DFA::usefulf() 运行错误}\label{sec:usefulf}
 
-“\verb+DFA::usefulf()+”函数为一个重要函数。用于去除有限自动机中的非“final-reachable”状态，在执行最小化算法前执行该函数，可以去除有限自动机中的非“final-reachable”状态，进而减少程序运行时间。其定义如代码 \ref{lst:usefulf}
+“DFA::usefulf()” 函数为一个重要函数。用于去除有限自动机中的非 “final-reachable” 状态，在执行最小化算法前执行该函数，可以去除有限自动机中的非“final-reachable”状态，进而减少程序运行时间。其定义如代码 \ref{lst:usefulf}
 \lstset{style=mystyle}
 \begin{lstlisting}[language=C++,label={lst:usefulf},caption={DFA::usefulf()}]
 // Remove any States that cannot reach a final State.
@@ -116,7 +116,7 @@ for (oldq->iter_start(i); !oldq->iter_end(i); oldq->iter_next(i))
 // Implement Remark 2.39  removing states that are not final - reachable.
 DFA& usefulf();
 \end{lstlisting}
-以图 \ref{fig:DFA4_0} 为例，状态$q_5$ 即为非 “final-reachable” 状态。移除状态 $q_5$ 之后如图 \ref{fig:DFA4_1} 。图 \ref{fig:DFA4_1} 转移函数如表 \ref{tab:DFA4_1}。
+以图 \ref{fig:DFA4_0} 为例，状态$q_5$ 即为非 “final-reachable” 状态（下称陷阱状态）。移除状态 $q_5$ 之后如图 \ref{fig:DFA4_1} 。图 \ref{fig:DFA4_1} 转移函数如表 \ref{tab:DFA4_1}。
 
 \begin{table}[!htbp]
     \caption{接受{$\mathcal{L}=0^*10^*$}的自动机{\cite{book1}}}
@@ -310,7 +310,7 @@ for (st = 0; st < Q.size(); st++)
 % \mbox{　} $ \mbox{\textbf{od }} \{ P = [Q]_E \} $ \\
 % \rule{\textwidth}{1pt} }
 
-实例化如表 \ref{tab:DFA411-1} 所示的自动机。（含有初始不可达状态\footnote{从开始状态不可以到达的状态，如图 \ref{fig:DFA11-0} 中状态 $q_9$ 。}（start-unreachable））
+实例化如表 \ref{tab:DFA411-1} 所示的自动机。（含有开始不可达状态\footnote{从开始状态不可以到达的状态，如图 \ref{fig:DFA11-0} 中状态 $q_9$ 。}（start-unreachable））
 
 \begin{table}[!htbp]
     \caption{图\ref{fig:DFA11-0}的转移函数}
@@ -334,7 +334,7 @@ for (st = 0; st < Q.size(); st++)
                         & $q_6$ & $q_7$   & $q_2$   \\
                         & $q_7$ & $q_6$   & $q_8$   \\
         结束状态(final) & $q_8$ & $q_5$   & $q_4$   \\
-        初始不可达状态    & $q_9$ & $q_7$   & $q_5$   \\
+        开始不可达状态    & $q_9$ & $q_7$   & $q_5$   \\
         \bottomrule%\hline 
     \end{tabular}
 \end{table}
@@ -409,7 +409,7 @@ inline int CRSet::iter_end(const int it) const
 
 经过 \ref{sec:ohloop} 节、\ref{sec:usefulf} 节和 \ref{sec:hopcroft} 节的修改，FIRE engine 中的最小化算法及最小化算法用到的帮助函数都可以成功运行。本节内容为测试正确的结果和一些未能解决的问题的汇总。
 
-\subsection{不改变已经是最小的 DFA 接受的 $\mathcal{L}$}
+\subsection{不改变已经是最小的 DFA 接受的语言}
 
 接受一个 $\mathcal{L}$ 的最小的 DFA 是唯一的，最小的且接受相同 $\mathcal{L}$ 的 DFA 仅仅在状态命名上有差别\cite{book1}。因此最小化算法有性质 \ref{sec:keepMin} 。
 
@@ -418,7 +418,7 @@ inline int CRSet::iter_end(const int it) const
 \end{property}
 
 \begin{remark}
-    DFA 中的 初始不可达（start-unreachable）状态和陷阱状态（final-unreachable）状态不影响 DFA 接受的 $\mathcal{L}$。
+    DFA 中的 开始不可达（start-unreachable）状态和陷阱状态（final-unreachable）状态不影响 DFA 接受的 $\mathcal{L}$。
 \end{remark}
 
 对于性质 \ref{sec:keepMin} ，以表 \ref{tab:KeepMinData} 中的一组最小的 DFA 为数据，测试结果表 \ref{tab:KeepMinResult} 所示。
@@ -440,14 +440,14 @@ inline int CRSet::iter_end(const int it) const
         1 &  图 \ref{fig:usefulf2-1} & 最小的 & 含有陷阱状态 \\
         2 &  图 \ref{fig:usefulf2-2} & 最小的 & 不含陷阱状态 \\
         \midrule
-        3 & 图 \ref{fig:DFA11-0} & 最小的 & 含有初始不可达状态 \\
-        4 & 图 \ref{fig:DFA11-1} & 最小的 & 不含初始不可达状态 \\
+        3 & 图 \ref{fig:DFA11-0} & 最小的 & 含有开始不可达状态 \\
+        4 & 图 \ref{fig:DFA11-1} & 最小的 & 不含开始不可达状态 \\
        \midrule
-        5 & 图 \ref{fig:keepMin-1-unreachable} & 最小的 & 含有初始不可达状态 \\
-        6 & 图 \ref{fig:keepMin-1-nonTheState} & 最小的 & 不含初始不可达状态 \\
+        5 & 图 \ref{fig:keepMin-1-unreachable} & 最小的 & 含有开始不可达状态 \\
+        6 & 图 \ref{fig:keepMin-1-nonTheState} & 最小的 & 不含开始不可达状态 \\
        \midrule
-        7 & 图 \ref{fig:keepMin-2-unreachable} & 最小的 & 含有初始不可达状态 \\
-        8 & 图 \ref{fig:keepMin-2-nonTheState} & 最小的 & 不含初始不可达状态 \\
+        7 & 图 \ref{fig:keepMin-2-unreachable} & 最小的 & 含有开始不可达状态 \\
+        8 & 图 \ref{fig:keepMin-2-nonTheState} & 最小的 & 不含开始不可达状态 \\
         \bottomrule%\hline  
     \end{tabular}
 \end{table}
@@ -479,8 +479,8 @@ inline int CRSet::iter_end(const int it) const
 结果总结对比如下：
 \begin{itemize}
     \item 对于 DFA 中的陷阱状态，可以调用函数 “DFA::usefulf()” 函数去除。表 \ref{tab:KeepMinResult} 中在执行最小化函数之前，除了算法 “DFA::min\_Brzozowski”， 都执行了函数 “DFA::usefulf()”；
-    \item 除了算法 “DFA::min\_Brzozowski()” 外，其他最小化算法均不能去除 DFA 中的初始不可达状态（start-unreachable）。数据为第 5 个和第 7 个，以 $\checkmark$ 标示，而不是 $\surd$；
-    \item 对于算法 “DFA::min\_Hopcroft()” 的 assert 中止，在发生 assert 中止的第 3 个数据中，含有初始不可达状态，作为对照组且含有初始不可达状态的第 5 个和第 7 个数据确没有发生 assert 中止，所以本文认为此算法的中止的问题不是 DFA 中初始不可达状态导致；
+    \item 除了算法 “DFA::min\_Brzozowski()” 外，其他最小化算法均不能去除 DFA 中的开始不可达状态（start-unreachable）。数据为第 5 个和第 7 个，以 $\checkmark$ 标示，而不是 $\surd$；
+    \item 对于算法 “DFA::min\_Hopcroft()” 的 assert 中止，在发生 assert 中止的第 3 个数据中，含有开始不可达状态，作为对照组且含有开始不可达状态的第 5 个和第 7 个数据确没有发生 assert 中止，所以本文认为此算法的中止的问题不是 DFA 中开始不可达状态导致；
     \item 对于第 3 个和第 4 个数据，算法 “DFA::min\_Brzozowski()” 改变了 DFA ，输入的 DFA 仅有 10/9 个状态，算法 “DFA::min\_Brzozowski()” 输出了含有数百个状态的自动机。
 \end{itemize}
 
@@ -506,8 +506,11 @@ inline int CRSet::iter_end(const int it) const
         2 & 图 \ref{fig:DFAMin-3-0} &         & 图 \ref{fig:DFAMin-3-2}  \\
         3 & 图 \ref{fig:DFAMin-3-1} & 最小的  & 图 \ref{fig:DFAMin-3-1}  \\
         \midrule
-        4 & 图 \ref{fig:DFAMin-4-0} &        & 图 \ref{fig:DFAMin-4-2}  \\
-        5 & 图 \ref{fig:DFAMin-4-1} & 最小的  & 图 \ref{fig:DFAMin-4-1}  \\
+        4 & 图 \ref{fig:DFAMin-5-0} &         & 图 \ref{fig:DFAMin-5-2}  \\
+        5 & 图 \ref{fig:DFAMin-5-1} & 最小的  & 图 \ref{fig:DFAMin-5-1}  \\
+        \midrule
+        6 & 图 \ref{fig:DFAMin-4-0} &        & 图 \ref{fig:DFAMin-4-2}  \\
+        7 & 图 \ref{fig:DFAMin-4-1} & 最小的  & 图 \ref{fig:DFAMin-4-1}  \\
         \bottomrule%\hline  
     \end{tabular}
 \end{table}
@@ -519,21 +522,21 @@ inline int CRSet::iter_end(const int it) const
     \small% fontsize
     \setlength{\tabcolsep}{4pt}% column separation 
     \renewcommand{\arraystretch}{1.2}%row space 
-    \begin{tabular}{l| p{3em}<{\centering} p{3em}<{\centering} p{3em}<{\centering} p{3em}<{\centering} p{3em}<{\centering} }  %l p{3em}<{\centering} p{3em}<{\centering} p{3em}<{\centering}
+    \begin{tabular}{l| p{2em}<{\centering} p{2em}<{\centering} p{2em}<{\centering} p{2em}<{\centering} p{2em}<{\centering} p{2em}<{\centering} p{2em}<{\centering} }  %l p{3em}<{\centering} p{3em}<{\centering} p{3em}<{\centering}
         \toprule %\hline 
-        算法 & 1 & 2 & 3 & 4 &  5  \\
+        算法 & 1 & 2 & 3 & 4 &  5 & 6 & 7 \\
         \midrule
-        DFA::min\_Brzozowski()        & $\surd$ & $\surd$ & $\surd$   & $\surd$     & $\surd$       \\
-        DFA::min\_Hopcroft()（修改前） & $\surd$ & $\surd$ & $\times$  & 中止        & $\surd$       \\
-        DFA::min\_Hopcroft()（修改后） & $\surd$ & $\surd$ & $\times$  & $\surd$     & $\surd$       \\
-        DFA::min\_HopcroftUllman()    & $\surd$ & $\surd$ & $\surd$   & $\surd$     & $\surd$       \\
-        DFA::min\_dragon()            & $\surd$ & $\surd$ & $\surd$   & $\surd$     & $\surd$       \\
-        DFA::min\_Watson()            & $\surd$ & $\surd$ & $\surd$   & $\surd$     & $\surd$       \\
+        DFA::min\_Brzozowski()        & $\surd$ & $\surd$ & $\surd$   & $\surd$ & $\surd$ & $\surd$     & $\surd$       \\
+        DFA::min\_Hopcroft()（修改前） & $\surd$ & $\surd$ & $\times$  & $\surd$ & $\surd$ & 中止        & $\surd$       \\
+        DFA::min\_Hopcroft()（修改后） & $\surd$ & $\surd$ & $\times$  & $\surd$ & $\surd$ & $\surd$     & $\surd$       \\
+        DFA::min\_HopcroftUllman()    & $\surd$ & $\surd$ & $\surd$   & $\surd$ & $\surd$ & $\surd$     & $\surd$       \\
+        DFA::min\_dragon()            & $\surd$ & $\surd$ & $\surd$   & $\surd$ & $\surd$ & $\surd$     & $\surd$       \\
+        DFA::min\_Watson()            & $\surd$ & $\surd$ & $\surd$   & $\surd$ & $\surd$ & $\surd$     & $\surd$       \\
         \bottomrule%\hline  
     \end{tabular}
 \end{table}
 
-对于第 3 个数据，算法 “DFA::min\_Hopcroft()” 无论是否修改过，均输出代码 \ref{lst:hoperrorResult} 。
+对于第 3 个数据，算法 “DFA::min\_Hopcroft()” 无论是否经过第 \ref{sec:hopcroft} 节的修改，均输出代码 \ref{lst:hoperrorResult} 。
 \lstset{style=mystyle}
 \begin{lstlisting}[language=C++,label={lst:hoperrorResult},caption={ 第 3 个数据在算法 “DFA::min\_Hopcroft()” 中的输出 }]
 DFA
@@ -620,16 +623,16 @@ current = -1
     \centering
     \begin{subfigure}[b]{0.4\textwidth}
         \includegraphics[width=\textwidth]{Min/DFAMinTest-3-1}
-        \caption{}
+        \caption{输入}
         \label{fig:DFAMin-3-1-inside}
     \end{subfigure}
     ~
     \begin{subfigure}[b]{0.4\textwidth}
         \includegraphics[width=\textwidth]{Min/DFAMinTest-3-3}
-        \caption{}
+        \caption{输出}
         \label{fig:DFAMin-3-3-inside}
     \end{subfigure}
-    \caption{DFA::min\_Hopcroft 算法使图 (a) 中的最小的 DFA 转换成了图 (B) 中的 DFA}
+    \caption{DFA::min\_Hopcroft 对第 3 个数据输入输出对比}
     \label{fig:DFAMinHoop-3}
   \end{figure}
 
