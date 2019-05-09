@@ -1,33 +1,19 @@
 \chapter{类 DFA 及相关类的设计}\label{cha:construct-dfa}
 
-\section{DFA类}
-在本文中，我们仅仅对 DFA 应用最小化算法，FIRE engine 中的DFA类为应用最小化算法的类。
-FIRE engine 提供了多种方式构造一个 DFA，类 DFA 的部分实现如表 \ref{tab:Class-DFA} 
-% \lstset{style=mystyle}
-% \begin{lstlisting}[language=C++,label={lst:consDFA},caption={class DFA}]
-% class DFA : virtual public FAabs
-% {
-% public:
-%     // Default copy constructor, destructor, operator= are okay.
-%     inline DFA();
+本章对类 DFA 做简要说明，说明如何实例化一个类 DFA 对象，作为第\ref{cha:realwork}章的测试的准备工作。类 DFA 为 FIRE engine 中应用最小化算法的类，类 FA 、类 RFA、类 RBFA 、类 LBFA 与类 DFA 都继承自类 FAabs ，它们之间的关系如图 \ref{fig:FAabsRel} 所示。
 
-%     // A special constructor used for subset construction etc.
-%     inline DFA(const DFA_components& r);
-%     ……
-%     StatePool Q;
-%     // S must be a singleton set, or empty. |S| <= 1
-%     StateSet S;
-%     StateSet F;  // final states
-%     DTransRel T;
-% }
-% ……
-% inline DFA::DFA(const DFA_components& r) :Q(r.Q), S(r.S), F(r.F), T(r.T)
-% {
-%     current = Invalid;
-%     assert(class_invariant());
-% }
-% ……
-% \end{lstlisting}
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{FAabsRel}
+    \caption{类FAabs及其派生类}
+    \label{fig:FAabsRel}
+\end{figure}
+
+\section{DFA类}
+在本文中，我们仅仅对 DFA 应用最小化算法，FIRE engine 提供了多种方式构造一个 DFA，要得到一个类 DFA 的对象，在已经实例化类 FA 、类 RFA 、类 RBFA 或类 LBFA 的情况下， 可以通过执行他们的成员成员函数 “determinism()” 得到一个类 DFA 对象。
+
+
+类 DFA 的部分实现如表 \ref{tab:Class-DFA} 
 
 \begin{table}[!htbp]
     \caption{类 DFA}
@@ -66,16 +52,10 @@ FIRE engine 提供了多种方式构造一个 DFA，类 DFA 的部分实现如�
 
 由表 \ref{tab:Class-DFA} 可知，类$DFA$默认情况下，提供一个用“DFA\_components”变量的引用来实例化DFA对象的方法。
 
-除了使用“DFA\_components”来实例化DFA对象之外，FIRE engine 还可以通过执行类 LBFA 的成员函数 LBFA::determinism() 来将 LBFA 对象转化成一个 DFA 对象，拥有同样功能的类还有类 FA 、类 RFA 和类 RBFA ，这四个类与类 DFA 都继承自类 FAabs 。
 
-类 FAabs 及其派生类关系如图\ref{fig:FAabsRel}
 
-\begin{figure}[!htbp]
-    \centering
-    \includegraphics[width=0.7\textwidth]{FAabsRel}
-    \caption{类FAabs及其派生类}
-    \label{fig:FAabsRel}
-\end{figure}
+
+
 
 %\newpage
 \section{DFA\_components 结构体}\label{sc:dfa_com}% ~\label{sc:dfa_com}
@@ -408,4 +388,4 @@ Transitions =
 current = -1
 \end{lstlisting}
 
-下文中将以表\ref{tab:DFA1}的形式来描述一个自动机，以代码\ref{lst:DFASampleLog}的形式来表示自动机在 FIRE engine 中的展现形式。实例化一个 DFA 时以 “实例化 DFA” 代指，不用代码表示。 
+下文中将以表 \ref{tab:DFA1} 的形式来描述一个自动机，以代码 \ref{lst:DFASampleLog} 的形式来表示自动机在 FIRE engine 中的展现形式。实例化一个 DFA 时以 “实例化 DFA” 代指，不用代码表示。 
