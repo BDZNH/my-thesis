@@ -1,5 +1,5 @@
 %!TEX root = ../Demo.tex
-\chapter{预备知识}
+\chapter{预备知识}\label{cha:preliminaries}
 
 在进行本文的叙述之前，需要预先了解一些相关的知识和定义，以便于使用更加简洁的描述方式。
 
@@ -24,6 +24,23 @@
     对于集合 $A$ 和 $B$ ，$A\to B$代表所有从$A$到$B$的函数的集合。
 \end{definition}
 
+\begin{definition}[笛卡尔积\cite{book1}]
+    对于集合 $A$ 和 $B$，$A$ 和 B 的的笛卡尔积是一个集合。该集合满足
+    \[
+        A \times B = \{ (a,b) | a \in A \land b \in B \}    
+    \]
+\end{definition}
+
+\begin{definition}[二元关系\cite{watson1993taxonomyb,book1}]
+    对于集合 $A$ 和 $B$，$\mathcal{C} \subseteq A \times B$ 是 $A \to \mathcal{P}(B)$ 的二元关系。
+\end{definition}
+
+\begin{definition}[关系的合成\cite{watson1993taxonomyb,book1}]
+    对于集合 $A$、$B$ 、 $C$，和关系 $\mathcal{R}_0 \subseteq A \times B$、$\mathcal{R}_1 \subseteq B \times C$，$\mathcal{R}_0$ 和 $\mathcal{R}_1$ 的合成定义为
+    \[ 
+        \mathcal{R}_0 \circ \mathcal{R}_1 = A \to C = \{ (a,c) | \exists (a,b) \in \mathcal{R}_0 \land (b,c) \in \mathcal{R}_2 \}
+    \]
+\end{definition}
 % \begin{definition}[等价类]
 %     something to write。
 % \end{definition}
@@ -129,7 +146,7 @@ $$ [A]_E = \{ [a]_E :a \in A \} $$
 \end{remark}
 
 \begin{remark}
-    本文在不同情况下使用不同的形式来表示转移关系，比如
+    本文在不同情况下使用不同的形式来表示转移关系，比如，对于转移关系 $T=(q_0 \times b \times q_1)$ ，也写成 $ q_1 = T(q_0 \times b) $。对于图 \ref{fig:state_graph} 中状态 $q_0$ 和 $q_2$ 之间的转移关系，可以描述为 $T(q_0\times w \times q_2)$ 或者 $q_2=T(q_0 \times w)$，其中，$w=ba$ 或 $w=b\epsilon$。
 \end{remark}
 
 \subsection{有限自动机的性质}
@@ -198,7 +215,7 @@ $$ [A]_E = \{ [a]_E :a \in A \} $$
 \end{definition}
 
 \begin{definition}[可达状态 \cite{watson1993taxonomya}]
-    可达状态是 $M$ 中满足条件的状态的集合。分为 “开始可到达状态” 和 “可到达结束状态”，其中
+    可达状态是分为 “开始可达状态” 和 “可达结束状态” （ $M$ 中），其中
     \begin{itemize}
         \item 开始可达状态：从开始状态可以到达的状态，写作 $SReachable(M)$；
         \item 可达结束状态： 能到达结束状态的状态，写作 $FReachable(M)$；
@@ -264,7 +281,7 @@ $$ [A]_E = \{ [a]_E :a \in A \} $$
 \end{definition}
 
 
-\begin{definition}[DFA 的最小化]
+\begin{definition}[DFA 的最小化]\label{def:min}
     满足以下条件时，$M\in DFA$是最小的：
     { \small \[  Min(M) \equiv (\forall M' : M' \in DFA \land Complete(M') \land \mathcal{L}(M) = \mathcal{L}_{FA}(M') : |M| \leq |M'| ) \] }
 函数 $Min$ 仅定义在 DFA 上。一个最小的但是仍然完全的 DFA 的定义如下：
@@ -274,14 +291,14 @@ $Min_{\mathcal{C}}$ 仅定义在完全 DFA 上。
 
 \subsection{有限自动机的变换}
 
-\begin{transformation}[FA 的反转(reversal)]
+\begin{transformation}[FA 的反转(reversal)\cite{watson1993taxonomyb}]
         $FA$反转由上标函数$ R \in FA \to FA $ 给出，它的定义如下：
         \[ (Q,V,T,S,F)^R = (Q,V,T^R,E^R,F,S) \]
     函数 $R$ 满足
     \[ (\forall M : M \in FA : ( \mathcal{L} (M) )^R = \mathcal{L}_{FA}(M^R)) \]
 \end{transformation}
 
-\begin{transformation}[移除开始状态不可达状态]
+\begin{transformation}[移除开始状态不可达状态\cite{watson1993taxonomyb}]
     变换$useful_s \in FA \longrightarrow FA$移除开始状态不可达状态：
     \begin{table}[!htbp]
         \centering
@@ -295,12 +312,12 @@ $Min_{\mathcal{C}}$ 仅定义在完全 DFA 上。
                                     &   & {\bfseries end} &                               \\
         \end{tabular}
     \end{table}
-\\函数 $ useful_s $满足
+\\除了性质 $ \mathcal{L}_{FA}(subset(M))= \mathcal{L}_{FA}(M) $（对所有的$M \in FA$）之外， 函数 $ useful_s $ 还满足
 \[  (\forall M : M \in FA : Useful_s ( useful_s(M) ) \land \mathcal{L}_{FA} (useful_s(M)) = \mathcal{L}_{FA}(M)) \]
 \end{transformation}
 
-\begin{transformation}[子集构造]
-    函数$subset$把一个$\epsilon$-$free$ $FA$ 转换为一个 $DFA$ (in the \textbf{let} clause $T'\in \mathcal{P}(Q) \times V \longrightarrow \mathcal{P}(\mathcal{P} (Q) )$): 
+\begin{transformation}[子集构造\cite{watson1993taxonomyb}]
+    函数$subset$把一个$\epsilon$-$free$ FA 转换为一个 DFA (在子句 \textbf{let} $T'\in \mathcal{P}(Q) \times V \longrightarrow \mathcal{P}(\mathcal{P} (Q) )$ 中): 
     \begin{table}[!htbp]
         \centering
         %\small% fontsize
@@ -320,3 +337,36 @@ $Min_{\mathcal{C}}$ 仅定义在完全 DFA 上。
 
 
 \section{等价性和最小化}
+
+令 $M=\{Q,V,T,\emptyset,S,F \}$ 为一个完全 DFA，并且 $M$ 中所有状态都是开始可达的。
+
+\begin{definition}[状态的等价\cite{watson1993taxonomyb}]
+    当$M$ 中的状态 $ p,q $ 满足式 \ref{eq:equivalence} 时，称状态 $p,q$ 等价。
+    \begin{equation} \label{eq:equivalence}
+        (p,q) \in E \equiv ( \overrightarrow{\mathcal{L}}(p) = \overrightarrow{\mathcal{L}}(q) )
+    \end{equation}
+    其中，$E$ 为等价关系（Equivalence relation）。
+\end{definition}
+
+\begin{definition}[状态的等价\cite{book1}]
+    给出状态等价的另一种描述。对给定的 $DFA$ $M=(Q,V,T,\emptyset,S,F)$，如果 $\exists w \in V^*$ ，使得$Q$ 中的两个状态 $p$ 和 $q$，$T(q,w)\in F$ 和 $T(p,w)$ 有且仅有一个成立，那么称 $p$ 和 $q$ 是可区分的，否则称 $p$ 和 $q$ 等价。
+\end{definition}
+
+\begin{remark}
+    关系 $D$ （Distinguishable） 是可区分的状态，$E$ 和 $D$ 满足 $D=\lnot E$。
+\end{remark}
+
+\subsection{最小化}
+
+最小化是对于一个给定的 DFA $M$，找到一个与 $M$ 接受同样的 $\mathcal{L}$ 的且状态数最少的 DFA $M_1$ ($|M_1|\leq |M|$)的过程， 最小化算法用来计算 DFA 中的关系 $D$ 和关系 $E$，只需计算其中一个即可得到 $M_1$ \cite{watson1993taxonomyb}（本文仅针对 DFA 应用最小化算法）。
+
+给出一种用于 DFA 的最小化算法\cite{Boo1,zf14Min}，描述如下：
+
+\begin{enumerate}[1]
+    \item 对所有的 $ \forall (p,q) \in (Q \setminus F) \times F $，标记可区分状态表中的表项 $(p,q)$ 
+    \item s一点点的写。
+\end{enumerate}
+
+% \begin{remark}
+%     本文把等价状态的集合叫做等价类。
+% \end{remark}

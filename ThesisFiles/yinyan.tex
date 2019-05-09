@@ -15,6 +15,8 @@ FIRE engine \cite{watson1994design}是一个使用C++语言实现有限自动机
 
 国内对最小化算法的研究则针对一些更加详细的分类。比如在胡芙提出的超最小化算法，用来把确信性树自动机转换为确定性有限自动机，然后用等价状态合并和等价类分割，最后得到差异有限的确定性树自动机\cite{hfTreeFA}。还有张锋的基于 Myhill-Nerode 原理推导出来的针对直觉模糊有限自动机和完备格上的直觉模糊有限自动机的最小化算法\cite{zf14Min}。对于自动机技术的实际应用，孙丹丹在海量的 Web 信息中抽取用户需要的信息上应用了模糊树自动机技术，并且提出模糊树自动机的构造算法和最小化算法\cite{sdd14}。 
 
-\section{本文的主要工作}
+\section{本文的工作}
 
-本文的主要使用 Visual Studio 2017 集成开发环境，对 FIRE engine 实现的最小化算法进行功能测试，验证 FIRE engine 的中的最小化算法的有效性\cite{lmw19}。
+第\ref{cha:preliminaries}章内容为确定性有限自动机最小化需要的预备知识，用来帮助理解。第\ref{cha:construct-dfa} 章则介绍 FIRE engine 中 对类 DFA 的实现和实例化类 DFA 所必须的其他的类，给出实例化类 DFA 对象所需要的步骤。第\ref{cha:realwork}章则是在测试过程中遇到的问题和解决这些问题的步骤。
+
+本文的主要使用 Visual Studio 2017 集成开发环境，对 FIRE engine 实现的最小化算法进行功能测试，验证 FIRE engine 的中的最小化算法的有效性。

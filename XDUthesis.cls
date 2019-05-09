@@ -389,13 +389,17 @@
 \cleardoublepage
 }
 \def\maketitle{
-\begin{titlepage}
-\begin{flushright}
-\begin{tabular}{c L{2.5cm}}
-\textbf{\zihao{-4}\XDU@classname} & \uline{~\textbf{\zihao{-4}\XDU@class}\quad~}\\
-\textbf{\zihao{-4}\XDU@schoolnumbername} & \uline{~\textbf{\zihao{-4}\XDU@schoolnumber}\quad~}\\
-\end{tabular}
-\end{flushright}
+\begin{titlepage}           %%%%%%%%%%  班级学号设置
+%\begin{flushright}
+\begin{table}
+  \raggedleft
+  \renewcommand{\arraystretch}{1.62}
+  \begin{tabular}{c c}
+    \textbf{\zihao{-4}\XDU@classname} & \uline{~\textbf{\zihao{-4}\XDU@class}~}\\
+    \textbf{\zihao{-4}\XDU@schoolnumbername} & \uline{~\textbf{\zihao{-4}{\XDU@schoolnumber}}~}\\
+  \end{tabular}
+\end{table}
+%\end{flushright}
 \if@WordOneHalf
 \if@nologo
   \vspace*{\stretch{11}}

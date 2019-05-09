@@ -1,4 +1,4 @@
-\chapter{类 DFA 及相关类的设计}
+\chapter{类 DFA 及相关类的设计}\label{cha:construct-dfa}
 
 \section{DFA类}
 在本文中，我们仅仅对 DFA 应用最小化算法，FIRE engine 中的DFA类为应用最小化算法的类。
@@ -64,7 +64,7 @@ FIRE engine 提供了多种方式构造一个 DFA，类 DFA 的部分实现如�
 \end{table}
 
 
-由表 \ref{tab:Class-DFA} 可知，类$DFA$默认情况下，提供一个用“DFA\_com-ponents”变量的引用来实例化DFA对象的方法。
+由表 \ref{tab:Class-DFA} 可知，类$DFA$默认情况下，提供一个用“DFA\_components”变量的引用来实例化DFA对象的方法。
 
 除了使用“DFA\_components”来实例化DFA对象之外，FIRE engine 还可以通过执行类 LBFA 的成员函数 LBFA::determinism() 来将 LBFA 对象转化成一个 DFA 对象，拥有同样功能的类还有类 FA 、类 RFA 和类 RBFA ，这四个类与类 DFA 都继承自类 FAabs 。
 

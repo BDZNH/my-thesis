@@ -1,5 +1,5 @@
 %!TEX root = ../Demo.tex
-\chapter{测试内容}
+\chapter{测试内容}\label{cha:realwork}
 
 本章内容为测试结果、测试过程中发现的问题、以及如何修复（部分）这些问题。
 
@@ -414,15 +414,12 @@ inline int CRSet::iter_end(const int it) const
 接受一个 $\mathcal{L}$ 的最小的 DFA 是唯一的，最小的且接受相同 $\mathcal{L}$ 的 DFA 仅仅在状态命名上有差别\cite{book1}。因此最小化算法有性质 \ref{sec:keepMin} 。
 
 \begin{property}\label{sec:keepMin}
-    最小化算法不能使最小的 DFA 接受的 $\mathcal{L}$ 发生改变。
+    由定义 \ref{def:min} 可知，对于 DFA $M$，$\mathcal{L}(Min(M))= \mathcal{L}(M)$，同样的，最小化算法不能使最小的 DFA 接受的 $\mathcal{L}$ 发生改变。
 \end{property}
 
 \begin{remark}
     DFA 中的 开始不可达（start-unreachable）状态和陷阱状态（final-unreachable）状态不影响 DFA 接受的 $\mathcal{L}$。
 \end{remark}
-
-对于性质 \ref{sec:keepMin} ，以表 \ref{tab:KeepMinData} 中的一组最小的 DFA 为数据，测试结果表 \ref{tab:KeepMinResult} 所示。
-
 
 
 
@@ -451,6 +448,11 @@ inline int CRSet::iter_end(const int it) const
         \bottomrule%\hline  
     \end{tabular}
 \end{table}
+
+
+对于性质 \ref{sec:keepMin} ，以表 \ref{tab:KeepMinData} 中的一组最小的 DFA 为数据，测试结果表 \ref{tab:KeepMinResult} 所示。
+
+
 
 
 \begin{table}[!htbp]
