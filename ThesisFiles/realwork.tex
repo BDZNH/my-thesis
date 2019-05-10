@@ -1,7 +1,28 @@
 %!TEX root = ../Demo.tex
 \chapter{测试内容}\label{cha:realwork}
 
-本章内容为测试结果、测试过程中发现的问题、以及如何修复（部分）这些问题。
+本章内容为测试结果、测试过程中发现的问题、以及如何修复（部分）这些问题。表 \ref{tab:testerrorlist} 中为本章概要，经过 \ref{sec:ohloop} 节、\ref{sec:usefulf} 节和 \ref{sec:hopcroft} 节的修改后， FIRE engine 中的最小化算法才能顺利执行。
+
+\begin{table}[!htbp]
+    \caption{本章内容概要}
+    \label{tab:testerrorlist}
+    \centering
+    \small% fontsize
+    \setlength{\tabcolsep}{6pt}% column separation
+    \renewcommand{\arraystretch}{1.2}%row space 
+    %\begin{tabular}{lcrr} 
+        \begin{tabular}{l l p{4em}<{\centering} p{5em}<{\centering} p{3em}<{\centering}}
+        \toprule %\hline 
+        函数 & 运行结果 & 是否修复 & 内容 & 位置 \\
+        \midrule%\hline
+        DFA::min\_Watson() & 函数进入无限循环 & 是 & 分析并修复  & \ref{sec:ohloop} \\
+        DFA::usefulf()     & 函数运行中止     & 是 & 分析并修复  & \ref{sec:usefulf} \\
+        DFA::min\_Hopcroft() & 函数运行中止   & 是 & 分析并修复  & \ref{sec:hopcroft} \\
+        最小化算法运行结果汇总   & --------------   & -- & ------ & \ref{sec:listall}  \\
+        DFA::min\_Hopcroft()& 函数功能异常   & 否 & 分析       &   \\
+        \bottomrule%\hline 
+    \end{tabular}
+\end{table}
 
 % \begin{remark}
 %     因为$DFA$的最小化建立在状态等价性的基础之上，所以本文并未专门针对等价性进行测试。    
@@ -9,10 +30,44 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{如何测试}
 
+以图 \ref{fig:DFA1} 中的 DFA 为例，按照附录代码 \ref{lst:DFASample} 所示，实例化一个类 DFA 的对象之后，通过执行最小化函数，观察他们的输出结果，列出转移函数，绘制自动机状态转移图。对比输入输出结果以得出结论。FIRE engine 中需要测试的五个最小化算法如表 \ref{tab:listMinAl} 所示。（表 \ref{tab:listMinAl} 中，Final-useful FA 可以通过执行类 DFA 的成员函数 DFA::usefulf() 得到）
 
+\begin{table}[!htbp]
+    \caption{Fire engine 中的五个最小化算法}
+    \label{tab:listMinAl}
+    \centering
+    \small% fontsize
+    \setlength{\tabcolsep}{6pt}% column separation
+    \renewcommand{\arraystretch}{1.2}%row space 
+    %\begin{tabular}{lcrr} 
+        \begin{tabular}{l c }
+        \toprule %\hline 
+        算法 & 是否需要 Final-useful FA  \\
+        \midrule%\hline
+        DFA::min\_Brzozowski()     & 否 \\
+        DFA::min\_Hopcroft()       & 是 \\
+        DFA::min\_HopcroftUllman() & 是 \\ 
+        DFA::min\_dragon()         & 是 \\
+        DFA::min\_Watson()         & 是 \\
+        \bottomrule%\hline 
+    \end{tabular}
+\end{table}
 
+\begin{example}
+    最小化函数执行示例如下
+\begin{lstlisting}
+    // 实例化 DFA 的对象(附录代码 C.1) ，得到 "dfa1"
+    dfa1.usefulf();
+    dfa1.min_Hopcroft();
+    std::cout << dfa1 << std::endl;
+\end{lstlisting}
+\end{example}
 
-
+% DFA::min\_Brzozowski()   
+% DFA::min\_Hopcroft()
+% DFA::min\_HopcroftUllman()   
+% DFA::min\_dragon()
+% DFA::min\_Watson()
 
 
 
@@ -20,7 +75,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{无限循环}\label{sec:ohloop}
 
-实例化一个如表 \ref{tab:DFA4} 的 DFA 的对象之后，调用函数 DFA::min\_Watson()。（表 \ref{tab:DFA4} 对应的状态转移图为图 \ref{fig:DFA4_0}，含有陷阱状态 $q_5$ \footnote{进入此状态之后无法通过任何转移离开，如图 \ref{fig:DFA4_0} 中的状态 {$q_5$}。} ）
+实例化一个如表 \ref{tab:DFA4} 的 DFA 的对象之后，调用函数 DFA::min\_Watson()。（表 \ref{tab:DFA4} 对应的状态转移图为图 \ref{fig:DFA4_0}，含有陷阱状态 $q_5$ ）
 
 \begin{table}[!htbp]
     \caption{接受{$\mathcal{L}=0^*10^*$}的自动机{\cite{book1}}}
@@ -318,7 +373,7 @@ for (st = 0; st < Q.size(); st++)
 % \mbox{　} $ \mbox{\textbf{od }} \{ P = [Q]_E \} $ \\
 % \rule{\textwidth}{1pt} }
 
-实例化如表 \ref{tab:DFA411-1} 所示的自动机。（含有开始不可达状态\footnote{从开始状态不可以到达的状态，如图 \ref{fig:DFA11-0} 中状态 $q_9$ 。}（start-unreachable））
+实例化如表 \ref{tab:DFA411-1} 所示的自动机。（含有开始不可达状态）
 
 \begin{table}[!htbp]
     \caption{图\ref{fig:DFA11-0}的转移函数}
@@ -347,10 +402,12 @@ for (st = 0; st < Q.size(); st++)
     \end{tabular}
 \end{table}
 
-函数 DFA::min\_Hopcroft() 是 Hopcroft 算法在 FIRE engine 中的实现，Hopcroft 算法在文中\cite{watson1993taxonomyb}描述如下：
+函数 DFA::min\_Hopcroft() 是 Hopcroft 算法在 FIRE engine 中的实现，Hopcroft 算法在文中\cite{watson1993taxonomyb}描述如图 \ref{fig:desHopcroft} 所示
 \begin{figure}[!htbp]
     \centering
-        \includegraphics[width=0.99\textwidth]{hopcroft}
+        \includegraphics[trim = 0mm 0mm 0mm 4mm, clip,width=0.99\textwidth]{hopcroft}
+    \caption{ Hopcroft 算法}
+    \label{fig:desHopcroft}
 \end{figure}
 
 \subsection{运行结果}\label{sec:hopcroft-error}
@@ -413,7 +470,7 @@ inline int CRSet::iter_end(const int it) const
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{测试结果汇总}
+\section{测试结果汇总}\label{sec:listall}
 
 经过 \ref{sec:ohloop} 节、\ref{sec:usefulf} 节和 \ref{sec:hopcroft} 节的修改，FIRE engine 中的最小化算法及最小化算法用到的帮助函数都可以成功运行。本节内容为测试正确的结果和一些未能解决的问题的汇总。
 
@@ -458,7 +515,7 @@ inline int CRSet::iter_end(const int it) const
 \end{table}
 
 
-对于性质 \ref{sec:keepMin} ，以表 \ref{tab:KeepMinData} 中的一组最小的 DFA 为数据，测试结果表 \ref{tab:KeepMinResult} 所示。
+对于性质 \ref{sec:keepMin} ，以表 \ref{tab:KeepMinData} 中的一组最小的 DFA 为数据，测试结果如表 \ref{tab:KeepMinResult} 所示。
 
 
 
@@ -490,7 +547,7 @@ inline int CRSet::iter_end(const int it) const
 \begin{itemize}
     \item 对于 DFA 中的陷阱状态，可以调用函数 “DFA::usefulf()” 函数去除。表 \ref{tab:KeepMinResult} 中在执行最小化函数之前，除了算法 “DFA::min\_Brzozowski”， 都执行了函数 “DFA::usefulf()”；
     \item 除了算法 “DFA::min\_Brzozowski()” 外，其他最小化算法均不能去除 DFA 中的开始不可达状态（start-unreachable）。数据为第 5 个和第 7 个，以 $\checkmark$ 标示，而不是 $\surd$；
-    \item 对于算法 “DFA::min\_Hopcroft()” 的 assert 中止，在发生 assert 中止的第 3 个数据中，含有开始不可达状态，作为对照组且含有开始不可达状态的第 5 个和第 7 个数据确没有发生 assert 中止，所以本文认为此算法的中止的问题不是 DFA 中开始不可达状态导致；
+    \item 对于算法 “DFA::min\_Hopcroft()” 的 assert 中止，在发生 assert 中止的第 3 个数据中，含有开始不可达状态，但是作为对照组且含有开始不可达状态的第 5 个和第 7 个数据没有发生 assert 中止，所以本文认为此算法的中止的问题不是 DFA 中开始不可达状态导致；
     \item 对于第 3 个和第 4 个数据，算法 “DFA::min\_Brzozowski()” 改变了 DFA ，输入的 DFA 仅有 10/9 个状态，算法 “DFA::min\_Brzozowski()” 输出了含有数百个状态的自动机。
 \end{itemize}
 
@@ -647,3 +704,40 @@ current = -1
   \end{figure}
 
 对于算法 “DFA::min\_Hopcroft()” 和算法 “DFA::min\_Brzozowski” 的扩展测试见附录。
+
+\section{DFA::min\_Hopcroft 算法分析}
+
+以表 \ref{tab:MinData} 中第三个数据，也即图 \ref{fig:DFAMin-3-1} 中的 DFA 为例，此 DFA 在 DFA::min\_Hopcroft 算法中的迭代过程如表 \ref{tab:hopcroftAna} 所示：
+
+\begin{table}[!htbp]
+    \caption{图\ref{fig:DFAMin-3-1}的 DFA 在 DFA::min\_Hopcroft 算法中的迭代过程}
+    \label{tab:hopcroftAna}
+    \centering
+    \small% fontsize
+    \setlength{\tabcolsep}{8pt}% column separation
+    \renewcommand{\arraystretch}{1.2}%row space 
+    \begin{tabular}{ccccccc|ccc|cc} 
+        \toprule%\hline 
+        \multirow{2}{*}{$n$} & \multirow{2}{*}{状态} & \multirow{2}{*}{$p$} & \multirow{2}{*}{$q$} & \multirow{2}{*}{$L[q]$} & \multirow{2}{*}{$C$} & \multirow{2}{*}{$r$} & \multicolumn{3}{c|}{$L$} & \multirow{2}{*}{$repr$} & \multirow{2}{*}{$P$}  \\
+        \cline{8-10}             &                   &                     &                    &                       &                   &    & 0 & 1 &2 & & \\
+        \midrule%\hline
+        \multirow{2}{*}{1} & 前 & 0 & 0 & 1 & b & -  & 1 & 0 & 0 & \{0,1\} & \{0\},\{1,2\} \\
+                           & 后 & 0 & 0 & 1 & b & -1 & 1 & 0 & 0 & \{0,1\} & \{0\},\{1,2\} \\
+        \midrule%\hline
+        \multirow{2}{*}{2} & 前 & 1 & 0 & 1 & b & -  & 1 & 0 & 0 & \{0,1\} & \{0\},\{1,2\} \\
+                           & 后 & 1 & 0 & 1 & b & -1 & 1 & 0 & 0 & \{0,1\} & \{0\},\{1,2\} \\
+        \midrule%\hline
+        \multirow{2}{*}{3} & 前 & 0 & 0 & 1 & a & -  & 0 & 0 & 0 & \{0,1\} & \{0\},\{1,2\} \\
+                           & 后 & 0 & 0 & 1 & a & -1 & 0 & 0 & 0 & \{0,1\} & \{0\},\{1,2\} \\
+        \midrule%\hline
+        \multirow{2}{*}{4} & 前 & 1 & 0 & 1 & a & -  & 0 & 0 & 0 & \{0,1\} & \{0\},\{1,2\} \\
+                           & 后 & 1 & 0 & 1 & a & -1 & 0 & 0 & 0 & \{0,1\} & \{0\},\{1,2\} \\
+        \midrule%\hline
+        \multirow{2}{*}{5} & - & - & - & - & - & -  & - & - & - & -- & ------ \\
+                           & - & - & - & - & - & -  & - & - & - & -- & ------ \\
+        %\midrule
+        \bottomrule%\hline 
+    \end{tabular}
+\end{table}
+
+表 \ref{tab:hopcroftAna} 中各项意义见附录表 \ref{tab:hopcroft} 。
