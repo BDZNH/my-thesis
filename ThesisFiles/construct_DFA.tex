@@ -82,6 +82,7 @@
         \bottomrule
     \end{tabular}
 \end{table}
+
 由表\ref{tab:DFA-components}可知，结构体 DFA\_components 内包含 StatePool 变量$Q$， StateSet 变量$S$， DTransRel 变量$T$， StateSet 变量$F$。若需要声明一个 DFA\_components 变量，则需要分别实例化 StatePool 、StateSet、DTransRel对象。这几个类还分别继承自其他的类，如图 \ref{fig:DFARel} 所示。
 
 \begin{figure}[!htbp]
@@ -257,7 +258,7 @@ StatePool类的部分实现如表 \ref{tab:Class-StatePool} （文件$StatePool.
 \section{实例化类DFA对象}\label{sec:get_a_dfa}
 
 在文件$DFA.cpp$中有如下实现：
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:DFACpp},caption={DFA.cpp}]
 inline int DFA::class_invariant() const
 {
@@ -269,7 +270,7 @@ inline int DFA::class_invariant() const
 }
 \end{lstlisting}
 而文件$DFA.h$中的构造函数如下：
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:DFA_H},caption={DFA.h}]
 inline DFA::DFA(const DFA_components& r) :Q(r.Q), S(r.S), F(r.F), T(r.T)
 {
@@ -284,7 +285,7 @@ inline DFA::DFA(const DFA_components& r) :Q(r.Q), S(r.S), F(r.F), T(r.T)
 对于$current \le Q.size() $，“current”变量的值被初始化为“Invalid”，并且之后没有对其进行更改，所以不列入式\ref{eq:DFA_class_invariant}中。
 
 在文件$State.h$中有如下定义
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:State_H},caption={State.h}]
 // Encode automata states as integers.
 typedef signed int State;
@@ -373,7 +374,7 @@ const State Invalid = -1;
 % \end{lstlisting}
 
 代码 \ref{lst:DFASample} 将在控制台输出如下信息：
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:DFASampleLog},caption={图\ref{fig:DFA1}中自动机在 FIRE engine 中的表现形式}]
 DFA
 Q = [0,4)

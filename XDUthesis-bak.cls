@@ -30,7 +30,7 @@
 \hyphenation{XDU-Thesis}
 \def\XDUthesis{X\kern -.1667em\lower .5ex\hbox {D}\kern -.125emU\textit{thesis}{}}
 \def\version{0.1.8}
-\LoadClass[a4paper,UTF8,zihao=-4,adobe]{ctexbook}
+\LoadClass[a4paper,UTF8,zihao=-4,fontset=adobe]{ctexbook}
 \RequirePackage{expl3}% LaTeX3 programming environment
 \ExplSyntaxOn%
 \providecommand{\g__ctex_fontset_tl}{}% platform fontset state variable
@@ -48,17 +48,14 @@
 \DeclareOption{mac}{\XDU@mactrue\XDU@timestrue}%
 \DeclareOption{adobe}{\XDU@adobetrue\XDU@timestrue}%
 
-
 \newif\ifXDU@ctex@windows \XDU@ctex@windowsfalse
 \newif\ifXDU@ctex@mac \XDU@ctex@macfalse
 \newif\ifXDU@ctex@adobe \XDU@ctex@adobefalse
 
 \newif\if@WordOneHalf \@WordOneHalffalse % 默认为LaTeX下的1.5倍行距
 \DeclareOption{WordOneHalf}{\@WordOneHalftrue}
-
 \newif\if@print \@printfalse %% 打印样式
 \DeclareOption{print}{\@printtrue}
-
 \newif\ifXDU@contentsnd \XDU@contentsndfalse
 \DeclareOption{contentsnd}{\XDU@contentsndtrue}
 \DeclareOption*{%
@@ -131,20 +128,25 @@
     \setsansfont[NFSSFamily=entextsf]{FreeSerif}%
   \fi
 \fi
+% \RequirePackage{algorithm,algorithmicx}
+% \def\ALG@name{{算法}}
 \RequirePackage{xcolor}
+\usepackage{ulem}
 \RequirePackage{amsmath,amssymb}
 \RequirePackage{graphicx}
+\RequirePackage{tablefootnote}
+\RequirePackage{geometry}
 \RequirePackage[amsmath,thmmarks,hyperref]{ntheorem}
 \RequirePackage[numbers,super,square,sort&compress]{natbib}
 \setlength{\bibsep}{0.2ex}%默认设置参考文献条目间距过宽，先设置为0.2ex调窄些。
 \RequirePackage[toc,page,title,titletoc,header]{appendix}
 \RequirePackage{listings}
 \RequirePackage{CJKfntef}
-\RequirePackage{geometry}
 \RequirePackage{longtable,multirow,hhline,tabularx,array,
                 makecell,diagbox,colortbl,booktabs}
 \RequirePackage[labelsep=quad]{caption}[2011/11/10]
 \RequirePackage[labelformat=simple,skip=10pt]{subcaption}
+\RequirePackage{bicaption}
 \newcommand{\PreserveBackslash}[1]{\let\temp=\\#1\let\\=\temp}
 \newcolumntype{C}[1]{>{\PreserveBackslash\centering}p{#1}}
 \newcolumntype{R}[1]{>{\PreserveBackslash\raggedleft}p{#1}}
@@ -159,11 +161,12 @@
     bookmarksnumbered=true
 ]{hyperref}
 
-% \if@print
-    \geometry{a4paper,left=4cm,right=2cm,top=3cm,bottom=2cm}
-% \else
-%   \geometry{a4paper,left=3cm,right=3cm,top=3cm,bottom=2cm}
-% \fi
+%%% 页面设置
+\if@print
+    \geometry{a4paper,left=4cm,right=2cm,top=3cm,bottom=2cm}   %for print
+\else
+    \geometry{a4paper,left=3cm,right=3cm,top=3cm,bottom=2cm}   %for view
+\fi
 
 \RequirePackage{setspace}
 \if@WordOneHalf
@@ -172,6 +175,7 @@
   \setstretch{1.5}%设置行距1.5倍
 \fi
 \RequirePackage{fancyhdr}
+% \setlength{\topmargin}{2cm-1.2in}
 \setlength{\headheight}{15pt}
 \fancypagestyle{plain}{%为了章首页
 \fancyhf{}
@@ -238,19 +242,35 @@
   \@mainmattertrue}
 
 
-\RequirePackage{blindtext}
-\@newctr{footnote}[page]
-\@newctr{mpfootnote}[page]
+\RequirePackage{blindtext}  %%%  设置 footnote 的序号绑定
+% \@newctr{footnote}[page]
+% \@newctr{mpfootnote}[page]
 
 \RequirePackage{pifont}
 \renewcommand\thefootnote{\ding{\numexpr171+\value{footnote}}}
 \renewcommand\thempfootnote{\ding{\numexpr171+\value{mpfootnote}}}
 \ctexset{
- chapter/beforeskip = {20pt},
- chapter/format = {\zihao{3}\heiti\centering},%修正章节标题错误加粗问题
+ %chapter/beforeskip = {10pt},
+ chapter/format = {\zihao{3}\heiti\centering},%修正章节标题错误加粗问题  设置章标题为黑体三号居中
  section/format = {\zihao{4}\songti\centering},
  subsection/format = {\zihao{-4}\songti}
 }
+
+\ctexset {
+    chapter = {    %%%%%%% 章节标题格式设置
+        % format = \linespread{1.0}\zihao{3}\bfseries\heiti\centering,
+        %format = \linespread{1.0}\zihao{3}\heiti\centering,
+        %nameformat = {},
+        %titleformat = {},
+        %number = \chinese{chapter},
+        %numberformat = \heiti,
+        aftername = \quad,
+        beforeskip = {7pt},
+        afterskip = {18pt},
+        %pagestyle = plain,
+    }
+}
+
 \RequirePackage{titletoc}
 \ifXDU@contentsnd
   \ifXDU@pdftex
@@ -371,13 +391,17 @@
 \cleardoublepage
 }
 \def\maketitle{
-\begin{titlepage}
-\begin{flushright}
-\begin{tabular}{c L{2.5cm}}
-\textbf{\zihao{-4}\XDU@classname} & \uline{~\textbf{\zihao{-4}\XDU@class}\quad~}\\
-\textbf{\zihao{-4}\XDU@schoolnumbername} & \uline{~\textbf{\zihao{-4}\XDU@schoolnumber}\quad~}\\
-\end{tabular}
-\end{flushright}
+\begin{titlepage}           %%%%%%%%%%  班级学号设置
+%\begin{flushright}
+\begin{table}
+  \raggedleft
+  \renewcommand{\arraystretch}{1.62}
+  \begin{tabular}{c c}
+    \textbf{\zihao{-4}\XDU@classname} & \uline{~\textbf{\zihao{-4}\XDU@class}~}\\
+    \textbf{\zihao{-4}\XDU@schoolnumbername} & \uline{~\textbf{\zihao{-4}{\XDU@schoolnumber}}~}\\
+  \end{tabular}
+\end{table}
+%\end{flushright}
 \if@WordOneHalf
 \if@nologo
   \vspace*{\stretch{11}}
@@ -465,6 +489,7 @@
 \make@abstract%
 
 \frontmatter
+\pdfbookmark[1]{\contentsname}{toc}  %% 添加目录页到书签
 \tableofcontents%
 \mainmatter
 }

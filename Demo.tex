@@ -1,5 +1,5 @@
 %!TEX program = xelatex
-\documentclass[WordOneHalf]{XDUthesis}
+\documentclass[WordOneHalf,adobe]{XDUthesis}
 % 参数设置：
 %     功能设置：
 %         <nologo>:      封面页去除logo（默认有logo）
@@ -15,11 +15,11 @@
 
 \title{有限自动机C++工具箱等价性和最小化类软件测试}
 \author{胡双朴}
-\date{{　　年　　月　　日}}
+\date{\qquad 年\qquad 月\qquad 日}
 %题目拆分：用于封面
 \septitleA{有限自动机C++工具箱}%如果论文题目长度<=11中文字符只需填此项即可B项空着
 \septitleB{等价性和最小化类软件测试}%如果论文题目长度>11中文字符, 建议拆分为10+x or 11+x 将剩余x个字符填在此处。
-\class{\phantom{22}1504012\quad}%班级号
+\class{1504012}%班级号
 \schoolnumber{15040120169}%学号
 \major{机械设计制造及其自动化}%专业
 \school{机电工程学院}%学院
@@ -74,6 +74,8 @@
     numberstyle = \footnotesize\ttfamily
 }
 
+\lstset{style=mystyle}
+
 %%% 自动换行设置
 \tolerance=1
 \emergencystretch=\maxdimen
@@ -85,8 +87,8 @@
 % \usepackage{bicaption}
 % \usepackage{clrscode3e}
 
-% \usepackage{algorithm}
-% \usepackage{algpseudocode}
+\renewcommand{\algorithmicrequire}{\bfseries 输入： } %Use Input in the format of Algorithm
+\renewcommand{\algorithmicensure}{\bfseries 输出： } %UseOutput in the format of Algorithm
 
 % \usepackage{program}
 

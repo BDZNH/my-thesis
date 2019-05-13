@@ -349,7 +349,7 @@ $Min_{\mathcal{C}}$ 仅定义在完全 DFA 上。
 \end{definition}
 
 \begin{definition}[状态的等价\cite{book1}]
-    给出状态等价的另一种描述。对给定的 $DFA$ $M=(Q,V,T,\emptyset,S,F)$，如果 $\exists w \in V^*$ ，使得$Q$ 中的两个状态 $p$ 和 $q$，$T(q,w)\in F$ 和 $T(p,w)$ 有且仅有一个成立，那么称 $p$ 和 $q$ 是可区分的，否则称 $p$ 和 $q$ 等价。
+    给出状态等价的另一种描述。对给定的 $DFA$ $M=(Q,V,T,\emptyset,S,F)$，如果 $\exists w \in V^*$ ，使得$Q$ 中的两个状态 $p$ 和 $q$，$T(q,w)\in F$ 和 $T(p,w)$ 有且仅有一个成立，那么称 $p$ 和 $q$ 是可区分的，否则称 $p$ 和 $q$ 等价，写作 $p \equiv q$。
 \end{definition}
 
 \begin{remark}
@@ -364,27 +364,54 @@ $Min_{\mathcal{C}}$ 仅定义在完全 DFA 上。
 
 最小化是对于一个给定的 DFA $M$，找到一个与 $M$ 接受同样的 $\mathcal{L}$ 的且状态数最少的 DFA $M_1$ ($|M_1|\leq |M|$)的过程， 最小化算法用来计算 DFA 中的关系 $D$ 和关系 $E$，只需计算其中一个即可得到 $M_1$ \cite{watson1993taxonomyb}（本文仅针对 DFA 应用最小化算法）。
 
-给出一种用于 DFA 的最小化算法\cite{book1,zf14Min}，描述如下：
+给出一种用于 DFA 的最小化算法\cite{book1,zf14Min,yingjie2009describing}，描述如算法 \ref{ali:classic-al} 所示：
 
-\begin{enumerate}[1.]
-    \item $ \forall (p,q) \in (Q \setminus F) \times F $，标记可区分状态表中的表项 $(p,q)$ 
-    \item $ \forall (p,q) \in (Q \setminus F) \times \in (Q \setminus F) \cup F \times F \land p \not =  q $ ，进行以下步骤:
-    \item 如果 $\exists a \in V $，若可区分状态表项 $(T(p,a),T(q,a))$ 已经被标记，那么继续标记可区分状态表 $(p,q)$；
-    \item 递归重复步骤 2 ，步骤 3 ；
-    \item 否则 $\forall a \in V $，如果 $T(p,a) \not= T(q,a) $ 且 $(p,a)$ 与  $(T(p,a),T(q,a))$ 不是同一个状态对，那么将 $(p,q)$ 放在  $(T(p,a),T(q,a))$ 的关联表上。
-\end{enumerate}
+\begin{algorithm}
+    \caption{经典算法}\label{ali:classic-al}
+    \begin{algorithmic}[1]
+        \Require DFA $M$
+        \Ensure 与 $M$ 同构的最小的 DFA
+        \Statex
+        \State $ \forall (p,q) \in (Q \setminus F) \times F $，标记状态对 $(p,q)$ 
+        \Repeat
+            \ForAll {未被标记的状态对$(p,q)$ }
+                \ForAll {$\forall x \in V$}
+                    \If {状态对$ (T(p,x),T(q,x)) $ 被标记了}
+                        \State 标记状态对$(p,q)$
+                    \EndIf
+                \EndFor
+            \EndFor
+        \Until{没有新的状态对被标记}
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{theorem}
+    算法 \ref{ali:classic-al} 的时间复杂度为 $\mathcal{O}(n^2)$ \cite{yingjie2009describing}。
+\end{theorem}
+
+\begin{theorem}
+    算法 \ref{ali:classic-al} 移除不可达状态后的 DFA 为最小的 DFA \cite{book1}。
+\end{theorem}
+
+% \begin{enumerate}[1.]
+%     \item $ \forall (p,q) \in (Q \setminus F) \times F $，标记可区分状态表中的表项 $(p,q)$ 
+%     \item $ \forall (p,q) \in (Q \setminus F) \times \in (Q \setminus F) \cup F \times F \land p \not =  q $ ，进行以下步骤:
+%     \item 如果 $\exists a \in V $，若可区分状态表项 $(T(p,a),T(q,a))$ 已经被标记，那么继续标记可区分状态表 $(p,q)$；
+%     \item 递归重复步骤 2 ，步骤 3 ；
+%     \item 否则 $\forall a \in V $，如果 $T(p,a) \not= T(q,a) $ 且 $(p,a)$ 与  $(T(p,a),T(q,a))$ 不是同一个状态对，那么将 $(p,q)$ 放在  $(T(p,a),T(q,a))$ 的关联表上。
+% \end{enumerate}
 
 % \begin{remark}
 %     本文把等价状态的集合叫做等价类。
 % \end{remark}
-其中
-\begin{itemize}
-    \item 可区分状态表，用来标记状态对是否可以被区分。如果相应的表项可以被区分，则使用 $\checkmark$ 标示。
-    \item 状态关联表。
-\end{itemize}
+% 其中
+% \begin{itemize}
+%     \item 可区分状态表，用来标记状态对是否可以被区分。如果相应的表项可以被区分，则使用 $\checkmark$ 标示。
+%     \item 状态关联表。
+% \end{itemize}
 
 \begin{example}
-    使用上述算法对图 \ref{fig:DFAMin-3-0-minexample} 中的 DFA 进行最小化。
+    使用算法 \ref{ali:classic-al} 对图 \ref{fig:DFAMin-3-0-minexample} 中的 DFA 进行最小化。
 \end{example}
 
 \begin{figure}[!htbp]
@@ -394,11 +421,12 @@ $Min_{\mathcal{C}}$ 仅定义在完全 DFA 上。
     \label{fig:DFAMin-3-0-minexample}
 \end{figure}
 
+
 \begin{enumerate}[(1)]
-    \item 首先在可区分状态表中标记状态对$(q_0,q_3)$，$(q_0,q_4)$，$(q_1,q_3)$，$(q_1,q_4)$，$(q_2,q_3)$，$(q_2,q_4)$。剩下需要计算的状态对为$(q_0,q_1)$，$(q_0,q_2)$，$(q_1,q_2)$，$(q_3,q_4)$；
-    \item 对于状态对$(q_0,q_1)$，$T(q_0,0)=q_1$，$T(q_1,0)=q_2$，此时状态对$(q_1,q_2)$未被标记，那么把状态对$(q_0,q_1)$放到$(q_1,q_2)$的状态关联表上，此时$(q_1,q_2)$状态关联表为$(q_1,q_2)\Rightarrow (q_0,q_1)$，再看$T(q_0,1)=q_2$，$T(q_1,1)=q_3$，此时$(q_0,q_3)$已经被标记，那么标记状态对$(q_0,q_1)$；
+    \item 首先标记状态对$(q_0,q_3)$，$(q_0,q_4)$，$(q_1,q_3)$，$(q_1,q_4)$，$(q_2,q_3)$，$(q_2,q_4)$。剩下需要计算的状态对为$(q_0,q_1)$，$(q_0,q_2)$，$(q_1,q_2)$，$(q_3,q_4)$；
+    \item 对于状态对$(q_0,q_1)$，$T(q_0,0)=q_1$，$T(q_1,0)=q_2$，此时状态对$(q_1,q_2)$未被标记，无操作；再看$T(q_0,1)=q_2$，$T(q_1,1)=q_3$，此时$(q_0,q_3)$已经被标记，那么标记状态对$(q_0,q_1)$；
     \item 对于状态对$(q_0,q_2)$，$T(q_0,0)=q_1$，$T(q_2,0)=q_1$，不做处理，再看$T(q_0,1)=q_2$，$T(q_2,1)=q_4$，此时状态对$(q_0,q_4)$已经被标记，那么标记$(q_0,q_2)$；
-    \item 对于状态对$(q_1,q_2)$，$T(q_1,0)=q_2$，$T(q_2,0)=q_1$，不做处理，再看$T(q_1,1)=q_3$，$T(q_2,1)=q_4$，此时状态对$(q_3,q_4)$未被标记，那么把状态对$(q_1,q_2)$添加到$(q_3,q_4)$的状态关联表上，此时$(q_3,q_4)$的状态关联表为$(q_3,q_4) \Rightarrow (q_1,q_2) $；
+    \item 对于状态对$(q_1,q_2)$，$T(q_1,0)=q_2$，$T(q_2,0)=q_1$，不做处理，再看$T(q_1,1)=q_3$，$T(q_2,1)=q_4$，此时状态对$(q_3,q_4)$未被标记，无操作；
     \item 对于状态对$(q_3,q_4)$，$T(q_3,0)=q_3$，$T(q_4,0)=q_3$，不做处理，再看$T(q_3,1)=q_4$，$T(q_4,1)=q_4$，不做处理；
     \item 算法结束。
 \end{enumerate}

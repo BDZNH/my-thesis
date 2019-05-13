@@ -108,7 +108,7 @@
 \subsection{错误原因} 
 
 单步调试发现进入无限循环的位置为min-bww.cpp（124行），为代码 \ref{lst:minbww} 中的“H.equivalize(p, q);”。
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:minbww},caption={min-bww.cpp}]
 if (are_eq(p, q, S, H, Z))
 {
@@ -117,7 +117,7 @@ if (are_eq(p, q, S, H, Z))
 }
 \end{lstlisting}
 单步进入该函数，可以看到代码 \ref{lst:StateEqRel} （StateEqRel.cpp（42行））
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:StateEqRel},caption={StateEqRel.cpp}]
 for (oldq->iter_start(i); !oldq->iter_end(i); oldq->iter_end(i))
 {
@@ -125,7 +125,7 @@ for (oldq->iter_start(i); !oldq->iter_end(i); oldq->iter_end(i))
 }
 \end{lstlisting}
 for循环的一般格式如代码 \ref{lst:for}
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:for},caption={for 循环的一般格式}]
 for (初始化循环变量; 循环条件; 迭代)
 {
@@ -133,7 +133,7 @@ for (初始化循环变量; 循环条件; 迭代)
 }
 \end{lstlisting}
 在代码 \ref{lst:StateEqRel} 中循环变量为“i”，循环条件为“!oldq->iter\_end(i);”，迭代为“oldq->iter\_end(i)”。查看“iter\_end()”函数实现如代码 \ref{lst:itend}
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:itend},caption={函数 iter\_end() 的实现}]
 // StateSet.h
 // Is r the last State in an iteration sequence.
@@ -156,7 +156,7 @@ inline int BitVec::iter_end(int r) const
 \subsection{解决方法}
 
 将代码 \ref{lst:StateEqRel} 中的迭代 “oldq->iter\_end(i)” 更改为 “oldq->iter\_next(i)”，更改后如代码 \ref{lst:StateEqRel2} ，经过比对，更改后与原文 \cite{watson1994design} 相同。
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:StateEqRel2},caption={StateEqRel.cpp}]
 for (oldq->iter_start(i); !oldq->iter_end(i); oldq->iter_next(i))
 {
@@ -172,7 +172,7 @@ for (oldq->iter_start(i); !oldq->iter_end(i); oldq->iter_next(i))
 \section{函数 DFA::usefulf() 运行错误}\label{sec:usefulf}
 
 “DFA::usefulf()” 函数为一个重要函数。用于去除有限自动机中的非 “final-reachable” 状态，在执行最小化算法前执行该函数，可以去除有限自动机中的非“final-reachable”状态，进而减少程序运行时间。其定义如代码 \ref{lst:usefulf}
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:usefulf},caption={DFA::usefulf()}]
 // Remove any States that cannot reach a final State.
 // (This is a last step in minimization, since some of the min. algorithms may yield a DFA with a sink state.)
@@ -231,7 +231,7 @@ DFA& usefulf();
 \subsection{错误原因}
 
 查看 TransImple.cpp，79行，代码如下
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:TransImple},caption={ TransImple.cpp },firstnumber=75]
 // Add a transition to the set.
 TransImpl& TransImpl::add_transition(const CharRange a, const State q)
@@ -245,7 +245,7 @@ TransImpl& TransImpl::add_transition(const CharRange a, const State q)
 在 79 行处打断点，单步调试至此处，可以看到 State 变量 q 的值为“-842150451”，对应的十六进制值为“0xFFFFFFFF”\footnote{调试时使用 64 位编译器产生的二进制文件，在 64 位系统下运行。}，为常见的未初始化错误。此时表达式 “0 <= q” 不成立，返回值为 “false” , 程序在此处中止。
 
 查看函数 DFA::usefulf() 的实现，如代码 \ref{lst:DFA_usefulf_1} 。
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:DFA_usefulf_1},caption={ DFA.cpp },firstnumber=84]
 StateTo<State> newnames;
 newnames.set_domain(Q.size());
@@ -264,7 +264,7 @@ for (st = 0; st < Q.size(); st++)
 }
 \end{lstlisting}
 在代码 \ref{lst:DFA_usefulf_1} 中将 “ final-reachable ” 状态保存到 StateTo<State> 变量 newnames 中，通过 “ ret.Q.allocate()” 为状态命名新的状态名，作为新的自动机的状态名。DFA\_components 变量 ret 用于构建新的自动机，再看函数内构造新的自动机的主要实现部分，如代码 \ref{lst:DFA_usefulf_2}
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:DFA_usefulf_2},caption={ DFA.cpp },firstnumber=130]
 for (it = 0; !a.iter_end(it); it++)
 {
@@ -275,7 +275,7 @@ for (it = 0; !a.iter_end(it); it++)
 
 根据代码 \ref{lst:TransImple} ，可以知道程序中止的地方为代码 \ref{lst:DFA_usefulf_2}，133 行。其中 State 变量为当前需要进行操作的状态，CharRange 变量 b 为当前状态转移输入字符。查看 T.
 transition\_on\_range(st, b)) 的实现，如代码 \ref{lst:transition_on_range}
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:transition_on_range},caption={ DTransRel.cpp },firstnumber=108]
 // Compute the image of r, and CharRange it under *this.
 inline State DTransRel::transition_on_range(const State r, const CharRange a) const
@@ -288,7 +288,7 @@ inline State DTransRel::transition_on_range(const State r, const CharRange a) co
 由代码 \ref{lst:transition_on_range} 可知，T.transition\_on\_range(st, b)) 将返回原自动机中，状态 st 经过输入字符 b 转移之后的目标状态。
 
 查看 newnames.lookup() 的实现，如代码 \ref{lst:newnames-lookup}
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:newnames-lookup},caption={ StateTo.h },firstnumber=177]
 // The actual mapping function
 // First, a const lookup operator.
@@ -309,7 +309,7 @@ inline const T& StateTo<T>::lookup(const State r) const
 \subsection{解决方法}
 
 如代码 \ref{lst:State_H} 所示，文件 State.h 中将无效状态设置为 “Invalid”。在代码 \ref{lst:DFA_usefulf_1}增加处理不满足条件 “freachable.contains(st)” 的状态的内容，将原自动机中的非“final-reachable”状态标记为 “Invalid”，更改后为代码 \ref{lst:DFA_usefulf_1_edit}
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:DFA_usefulf_1_edit},caption={ 更改后的 DFA.cpp },firstnumber=91]
 for (st = 0; st < Q.size(); st++)
 {
@@ -327,7 +327,7 @@ for (st = 0; st < Q.size(); st++)
 \end{lstlisting}
 
 在代码 \ref{lst:DFA_usefulf_2} 中，在添加新的转移关系之前判断当前状态和目标状态是否都是有效状态，若都为有效状态，则添加新的转移关系。更改后为代码 \ref{lst:DFA_usefulf_2_edit}
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:DFA_usefulf_2_edit},caption={ 更改后的 DFA.cpp },firstnumber=133]
     State stdest;                                           // 新增
     stdest = newnames.lookup(T.transition_on_range(st, b)); // 新增
@@ -403,6 +403,7 @@ for (st = 0; st < Q.size(); st++)
 \end{table}
 
 函数 DFA::min\_Hopcroft() 是 Hopcroft 算法在 FIRE engine 中的实现，Hopcroft 算法在文中\cite{watson1993taxonomyb}描述如图 \ref{fig:desHopcroft} 所示
+
 \begin{figure}[!htbp]
     \centering
         \includegraphics[trim = 0mm 0mm 0mm 4mm, clip,width=0.99\textwidth]{hopcroft}
@@ -412,7 +413,7 @@ for (st = 0; st < Q.size(); st++)
 
 \subsection{运行结果}\label{sec:hopcroft-error}
 执行函数 DFA::min\_Hopcroft()，程序在文件CRSet.h，第 146 行的 “assert(!iter\_end(it))” 处触发 assert 中止，如代码 \ref{lst:iterend} 所示。调用函数“CRSet::iterator()”的地方为文件min-hop.cpp，第103行，“State r(split(p, q, C.iterator(L[q]), P));”的“C.iterator(L[q])”处。
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:iterend},caption={ CRSet.h },firstnumber=142]
 // Fetch the it'th CharRange in *this.
 inline const CharRange& CRSet::iterator(const int it) const
@@ -442,7 +443,7 @@ inline int CRSet::iter_end(const int it) const
 \subsection{解决方法}
 
 函数 DFA::min\_Hopcroft() 的主要实现部分如代码 \ref{lst:hopcroft-iter}。
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:hopcroft-iter},caption={ min-hop.cpp },firstnumber=100]
     for (repr.iter_start(p); !repr.iter_end(p); repr.iter_next(p))
     {
@@ -453,7 +454,7 @@ inline int CRSet::iter_end(const int it) const
 
 在分割等价类之前，判断 L[q] 是否等于 “C.size()”，若是，则减去 “1”，更改后为代码 \ref{lst:hopcroft-iter-edit}
 
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:hopcroft-iter-edit},caption={ min-hop.cpp },firstnumber=100]
     for (repr.iter_start(p); !repr.iter_end(p); repr.iter_next(p))
     {
@@ -541,7 +542,7 @@ inline int CRSet::iter_end(const int it) const
     \end{tabular}
 \end{table}
 
-对表 \ref{tab:KeepMinResult} 中的测试结果有两个算法需要额外关注—— “DFA::min\_Brzozowski()” 和 “DFA::min\_Hopcroft()”。
+%对表 \ref{tab:KeepMinResult} 中的测试结果有两个算法需要额外关注—— “DFA::min\_Brzozowski()” 和 “DFA::min\_Hopcroft()”。
 
 结果总结对比如下：
 \begin{itemize}
@@ -604,7 +605,7 @@ inline int CRSet::iter_end(const int it) const
 \end{table}
 
 对于第 3 个数据，算法 “DFA::min\_Hopcroft()” 无论是否经过第 \ref{sec:hopcroft} 节的修改，均输出代码 \ref{lst:hoperrorResult} 。
-\lstset{style=mystyle}
+
 \begin{lstlisting}[language=C++,label={lst:hoperrorResult},caption={ 第 3 个数据在算法 “DFA::min\_Hopcroft()” 中的输出 }]
 DFA
 Q = [0,2)
@@ -703,17 +704,25 @@ current = -1
     \label{fig:DFAMinHoop-3}
   \end{figure}
 
-对于算法 “DFA::min\_Hopcroft()” 和算法 “DFA::min\_Brzozowski” 的扩展测试见附录。
+%对于算法 “DFA::min\_Hopcroft()” 和算法 “DFA::min\_Brzozowski” 的扩展测试见附录。
 
+本小节总结如下
+\begin{itemize}
+    \item FIRE engine 对于算法 “DFA::min\_Hopcroft()” 和算法 “DFA::min\_Brzozowski” 的实现仍然有不足之处；
+    \item FIRE engine 对于算法“DFA::min\_HopcroftUllman()”、“DFA::min\_dragon()”、\\ “DFA::min\_Watson()” 的实现可信度较高。  
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{DFA::min\_Hopcroft 算法分析}
 
-以表 \ref{tab:MinData} 中第三个数据，也即图 \ref{fig:DFAMin-3-1} 中的 DFA 为例，此 DFA 在 DFA::min\_Hopcroft 算法中的迭代过程如表 \ref{tab:hopcroftAna} 所示：
+以表 \ref{tab:MinData} 中第三个数据，也即图 \ref{fig:DFAMin-3-1} 中的 DFA 为例，此 DFA 在 DFA::min\_Hopcroft 算法中的迭代过程如表 \ref{tab:hopcroftAna} 所示，算法原型见图 \ref{fig:desHopcroft}：
 
 \begin{table}[!htbp]
     \caption{图\ref{fig:DFAMin-3-1}的 DFA 在 DFA::min\_Hopcroft 算法中的迭代过程}
     \label{tab:hopcroftAna}
     \centering
-    \small% fontsize
+    \footnotesize% fontsize
     \setlength{\tabcolsep}{8pt}% column separation
     \renewcommand{\arraystretch}{1.2}%row space 
     \begin{tabular}{ccccccc|ccc|cc} 
@@ -741,3 +750,12 @@ current = -1
 \end{table}
 
 表 \ref{tab:hopcroftAna} 中各项意义见附录表 \ref{tab:hopcroft} 。
+下面对 Hopcroft 算法进行分析：
+\begin{enumerate}[(1)]
+    \item $Q$ 首先被分为两个等价类，$P=(Q\setminus F) \cup F = \{(0),(1,2)\}$ 。因 $|Q\setminus F|\le |F|$，所以 $L=F\times V$；
+    \item 第一次迭代，取出 $repr$ 第一个元素 $0$，赋值给$p$，此时 $p=0,q=0,C=b$，并且从$L$ 内移除与字符 'b' 相关的转移关系，$Splittable(p,q,c)$不成功，不做操作；
+    \item 第二次迭代，取出 $repr$ 第一个元素 $1$，赋值给$p$，此时$p=1,q=0,C=b$，$Splittable(p,q,c)$不成功，不做操作；
+    \item 第三次迭代，取出 $repr$ 第一个元素 $0$，赋值给$p$，此时$p=0,q=0,C=a$，并且从$L$ 内移除与字符 'b' 相关的转移关系，$Splittable(p,q,c)$不成功，不做操作；
+    \item 第四次迭代，取出 $repr$ 第一个元素 $1$，赋值给$p$，此时$p=1,q=0,C=a$，$Splittable(p,q,c)$不成功，不做操作；
+    \item 第五次迭代，此时 $L$ 内已经没有转移关系，算法结束。
+\end{enumerate}

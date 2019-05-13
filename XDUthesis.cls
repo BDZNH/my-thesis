@@ -26,10 +26,10 @@
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{XDUthesis}
-[2019/04/17 0.1.8 Xidian University Thesis Template]
+[2019/05/11 0.1.9 Xidian University Thesis Template]
 \hyphenation{XDU-Thesis}
 \def\XDUthesis{X\kern -.1667em\lower .5ex\hbox {D}\kern -.125emU\textit{thesis}{}}
-\def\version{0.1.8}
+\def\version{0.1.9}
 \LoadClass[a4paper,UTF8,zihao=-4,fontset=adobe]{ctexbook}
 \RequirePackage{expl3}% LaTeX3 programming environment
 \ExplSyntaxOn%
@@ -51,6 +51,7 @@
 \newif\ifXDU@ctex@windows \XDU@ctex@windowsfalse
 \newif\ifXDU@ctex@mac \XDU@ctex@macfalse
 \newif\ifXDU@ctex@adobe \XDU@ctex@adobefalse
+\newif\ifXDU@ctex@fandol \XDU@ctex@fandolfalse
 
 \newif\if@WordOneHalf \@WordOneHalffalse % 默认为LaTeX下的1.5倍行距
 \DeclareOption{WordOneHalf}{\@WordOneHalftrue}
@@ -78,7 +79,8 @@
 \xduifstreq{\XDU@ctexfontset}{windows}{\XDU@ctex@windowstrue\XDU@timestrue}{%
 \xduifstreq{\XDU@ctexfontset}{mac}{\XDU@ctex@mactrue\XDU@timestrue}{%
 \xduifstreq{\XDU@ctexfontset}{adobe}{\XDU@ctex@adobetrue\XDU@timestrue}{%
-\XDU@timesfalse}}}
+\xduifstreq{\XDU@ctexfontset}{fandol}{\XDU@ctex@fandoltrue\XDU@timesfalse}{%
+\XDU@timesfalse}}}}
 \RequirePackage{ifthen}
 \ifXDU@pdftex
     \RequirePackage[utf8]{inputenc}% set input encoding, document must use utf-8 encoding
@@ -129,11 +131,8 @@
   \fi
 \fi
 \RequirePackage{xcolor}
-\usepackage{ulem}
 \RequirePackage{amsmath,amssymb}
 \RequirePackage{graphicx}
-\RequirePackage{tablefootnote}
-\RequirePackage{geometry}
 \RequirePackage[amsmath,thmmarks,hyperref]{ntheorem}
 \RequirePackage[numbers,super,square,sort&compress]{natbib}
 \setlength{\bibsep}{0.2ex}%默认设置参考文献条目间距过宽，先设置为0.2ex调窄些。
@@ -144,7 +143,6 @@
                 makecell,diagbox,colortbl,booktabs}
 \RequirePackage[labelsep=quad]{caption}[2011/11/10]
 \RequirePackage[labelformat=simple,skip=10pt]{subcaption}
-\RequirePackage{bicaption}
 \newcommand{\PreserveBackslash}[1]{\let\temp=\\#1\let\\=\temp}
 \newcolumntype{C}[1]{>{\PreserveBackslash\centering}p{#1}}
 \newcolumntype{R}[1]{>{\PreserveBackslash\raggedleft}p{#1}}
@@ -158,12 +156,13 @@
     urlcolor=black,
     bookmarksnumbered=true
 ]{hyperref}
+\RequirePackage{algpseudocode,algorithm,algorithmicx}
+\def\ALG@name{{算法}} %% 更改 “Algorithm” 为 “算法”，这里借鉴中国科学院大学Latex模板
 
-%%% 页面设置
 \if@print
-    \geometry{a4paper,left=4cm,right=2cm,top=3cm,bottom=2cm}   %for print
+    \RequirePackage[a4paper,left=4cm,right=2cm,top=3cm,bottom=2cm]{geometry}
 \else
-    \geometry{a4paper,left=3cm,right=3cm,top=3cm,bottom=2cm}   %for view
+    \RequirePackage[a4paper,left=3cm,right=3cm,top=3cm,bottom=2cm]{geometry}
 \fi
 
 \RequirePackage{setspace}
@@ -173,7 +172,6 @@
   \setstretch{1.5}%设置行距1.5倍
 \fi
 \RequirePackage{fancyhdr}
-% \setlength{\topmargin}{2cm-1.2in}
 \setlength{\headheight}{15pt}
 \fancypagestyle{plain}{%为了章首页
 \fancyhf{}
@@ -186,7 +184,7 @@
 
 \fancypagestyle{myheadings}{%为了摘要
 \fancyhf{}
-\fancyhead[C]{\zihao{5}\songti\XDU@abstractname}
+\fancyhead[C]{\zihao{5}\songti\XDU@abstractnameheader}
 \renewcommand{\headrulewidth}{0.75pt}
 \renewcommand{\footrulewidth}{0pt}}
 \fancypagestyle{headings}{%为了abstract
@@ -209,6 +207,12 @@
 \fancyhead[EL]{\zihao{-5}\thepage}
 \renewcommand{\headrulewidth}{0.75pt}
 \renewcommand{\footrulewidth}{0pt}}
+\renewcommand{\tableofcontents}{%
+  \cleardoublepage%
+  \chapter*{\contentsname}%
+  \@mkboth{\XDU@contentsnameheader}{\XDU@contentsnameheader}%
+  \@starttoc{toc}%
+}%
 
 \renewcommand\frontmatter{%
   \if@openright\cleardoublepage\else\clearpage\fi
@@ -240,35 +244,19 @@
   \@mainmattertrue}
 
 
-\RequirePackage{blindtext}  %%%  设置 footnote 的序号绑定
-% \@newctr{footnote}[page]
-% \@newctr{mpfootnote}[page]
+\RequirePackage{blindtext}
+\@newctr{footnote}[page]
+\@newctr{mpfootnote}[page]
 
 \RequirePackage{pifont}
 \renewcommand\thefootnote{\ding{\numexpr171+\value{footnote}}}
 \renewcommand\thempfootnote{\ding{\numexpr171+\value{mpfootnote}}}
 \ctexset{
- %chapter/beforeskip = {10pt},
- chapter/format = {\zihao{3}\heiti\centering},%修正章节标题错误加粗问题  设置章标题为黑体三号居中
+ chapter/beforeskip = {20pt},
+ chapter/format = {\zihao{3}\heiti\centering},%修正章节标题错误加粗问题
  section/format = {\zihao{4}\songti\centering},
  subsection/format = {\zihao{-4}\songti}
 }
-
-\ctexset {
-    chapter = {    %%%%%%% 章节标题格式设置
-        % format = \linespread{1.0}\zihao{3}\bfseries\heiti\centering,
-        %format = \linespread{1.0}\zihao{3}\heiti\centering,
-        %nameformat = {},
-        %titleformat = {},
-        %number = \chinese{chapter},
-        %numberformat = \heiti,
-        aftername = \quad,
-        beforeskip = {7pt},
-        afterskip = {18pt},
-        %pagestyle = plain,
-    }
-}
-
 \RequirePackage{titletoc}
 \ifXDU@contentsnd
   \ifXDU@pdftex
@@ -282,11 +270,11 @@
         {}%
     {\textbf{\contentspage}}
   \fi
-  \titlecontents{section}[2em]{\zihao{-4}}%
+  \titlecontents{section}[3.5em]{\zihao{-4}}%
   {\contentslabel{2em}}%
       {}%
   {\textit{\contentspage}}
-  \titlecontents{subsection}[3em]{\zihao{-4}}%
+  \titlecontents{subsection}[6.5em]{\zihao{-4}}%
   {\contentslabel{3em}}%
       {}%
   {\textit{\contentspage}}
@@ -330,6 +318,7 @@
 \XDU@define@term{class}
 \XDU@define@term{supervisor}
 \XDU@define@term{thanksforname}
+\XDU@define@term{thanksfornameheader}
 \XDU@define@term{subject}
 \XDU@define@term{abstractname}
 \XDU@define@term{enabstractname}
@@ -360,16 +349,41 @@
 \newcommand{\XDU@@eabstract}[1]{\long\gdef\XDU@eabstract{#1}}
 \newenvironment{enabstract}{\collect@body\XDU@@eabstract}{}
 
-\ifXDU@pdftex
-\newcommand{\enheiti}{\fontfamily{SimHei}\selectfont}
-\else
-\newfontfamily\enheiti{SimHei} % 新加字体族，用于修正封面页标题英文字体非黑体问题，感谢lanthree <https://github.com/lanthree>同学
-\fi
+\ifXDU@pdftex%
+  \ifXDU@ctex@fandol%
+    \newcommand{\enheiti}{\fontfamily{FandolHei-Regular.otf}\selectfont}
+  \else%
+    \ifXDU@mac%
+      \ifXDU@ctex@mac% 如果用户选择了Mac字体族，且ctex判断当前系统为Mac时，设置为Heiti SC，否则为SimHei，逻辑有点问题。估计不会有人用Windows系统选Mac字体的吧。
+        \newcommand{\enheiti}{\fontfamily{Heiti SC}\selectfont}
+      \else%
+        \newcommand{\enheiti}{\fontfamily{SimHei}\selectfont}
+      \fi%
+    \else%
+      \newcommand{\enheiti}{\fontfamily{SimHei}\selectfont}
+    \fi%
+  \fi%
+\else%
+  \ifXDU@ctex@fandol%
+    \newfontfamily\enheiti{FandolHei-Regular.otf}
+  \else%
+    \ifXDU@mac%
+      \ifXDU@ctex@mac%
+        \newfontfamily\enheiti{Heiti SC}
+      \else%
+        \newfontfamily\enheiti{SimHei}
+      \fi%
+    \else%
+      \newfontfamily\enheiti{SimHei} % 新加字体族，用于修正封面页标题英文字体非黑体问题，感谢lanthree <https://github.com/lanthree>同学
+    \fi%
+  \fi%
+\fi%
 \def\make@abstract{%
 \cleardoublepage%
 \pagenumbering{roman}
 \pagestyle{myheadings}
 \phantomsection
+% \pdfbookmark[1]{\XDU@abstractnameheader}{toc}  %% 添加摘要页到书签
 \vspace*{2em}
 \centerline{\heiti\chaptersize\XDU@abstractname}\vskip5pt\par%
 \vspace*{2em}
@@ -379,6 +393,7 @@
 \cleardoublepage%
 \pagestyle{headings}
 \phantomsection
+% \pdfbookmark[1]{\XDU@enabstractname}{toc}  %% 添加Abstract页到书签
 \vspace*{2em}
 \centerline{\textbf{\chaptersize\XDU@enabstractname}}\vskip5pt\par%
 \vspace*{2em}
@@ -389,17 +404,16 @@
 \cleardoublepage
 }
 \def\maketitle{
-\begin{titlepage}           %%%%%%%%%%  班级学号设置
-%\begin{flushright}
+\begin{titlepage}
+%%  封面右上角班级学号格式
 \begin{table}
   \raggedleft
-  \renewcommand{\arraystretch}{1.62}
+  \renewcommand{\arraystretch}{1.3}
   \begin{tabular}{c c}
-    \textbf{\zihao{-4}\XDU@classname} & \uline{~\textbf{\zihao{-4}\XDU@class}~}\\
-    \textbf{\zihao{-4}\XDU@schoolnumbername} & \uline{~\textbf{\zihao{-4}{\XDU@schoolnumber}}~}\\
+    \textbf{\zihao{-4}\XDU@classname}        & \uline{~~~~~ \textbf{\zihao{-4}\XDU@class}          ~~~~~}\\
+    \textbf{\zihao{-4}\XDU@schoolnumbername} & \uline{~     \textbf{\zihao{-4}{\XDU@schoolnumber}}     ~}\\
   \end{tabular}
 \end{table}
-%\end{flushright}
 \if@WordOneHalf
 \if@nologo
   \vspace*{\stretch{11}}
@@ -487,7 +501,7 @@
 \make@abstract%
 
 \frontmatter
-\pdfbookmark[1]{\contentsname}{toc}  %% 添加目录页到书签
+\pdfbookmark[1]{\XDU@contentsnameheader}{toc}  %% 添加目录页到书签
 \tableofcontents%
 \mainmatter
 }
@@ -560,7 +574,7 @@
   }
 \fi
 \newenvironment{thanksfor}{\backmatter
-\chapter{\XDU@thanksforname}}{\comtinuematter}
+\chapter[\XDU@thanksfornameheader]{\XDU@thanksforname}}{\comtinuematter}
 \def\XDU@setpdf@keywords{
     \hypersetup{
     pdfkeywords={\XDU@keywords}
