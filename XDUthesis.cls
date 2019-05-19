@@ -30,7 +30,7 @@
 \hyphenation{XDU-Thesis}
 \def\XDUthesis{X\kern -.1667em\lower .5ex\hbox {D}\kern -.125emU\textit{thesis}{}}
 \def\version{0.1.9}
-\LoadClass[a4paper,UTF8,zihao=-4,fontset=adobe]{ctexbook}
+\LoadClass[a4paper,UTF8,zihao=-4]{ctexbook}
 \RequirePackage{expl3}% LaTeX3 programming environment
 \ExplSyntaxOn%
 \providecommand{\g__ctex_fontset_tl}{}% platform fontset state variable
@@ -156,7 +156,8 @@
     urlcolor=black,
     bookmarksnumbered=true
 ]{hyperref}
-\RequirePackage{algpseudocode,algorithm,algorithmicx}
+\RequirePackage[chapter]{algorithm}
+\RequirePackage{algpseudocode,algorithmicx}
 \def\ALG@name{{算法}} %% 更改 “Algorithm” 为 “算法”，这里借鉴中国科学院大学Latex模板
 
 \if@print
@@ -217,7 +218,7 @@
 \renewcommand\frontmatter{%
   \if@openright\cleardoublepage\else\clearpage\fi
   \@mainmatterfalse
-  \pagenumbering{Roman}
+  \pagenumbering{roman}
   \pagestyle{XDU@mulu}}
 
 \def\ps@XDU@main{%

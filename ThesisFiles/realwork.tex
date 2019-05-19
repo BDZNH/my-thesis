@@ -15,11 +15,11 @@
         \toprule %\hline 
         函数 & 运行结果 & 是否修复 & 内容 & 位置 \\
         \midrule%\hline
-        DFA::min\_Watson() & 函数进入无限循环 & 是 & 分析并修复  & \ref{sec:ohloop} \\
-        DFA::usefulf()     & 函数运行中止     & 是 & 分析并修复  & \ref{sec:usefulf} \\
-        DFA::min\_Hopcroft() & 函数运行中止   & 是 & 分析并修复  & \ref{sec:hopcroft} \\
+        DFA::min\_Watson() & 函数进入无限循环 & 是 & 分析并修复   & \ref{sec:ohloop} \\
+        DFA::usefulf()     & 函数运行中止     & 是 & 分析并修复   & \ref{sec:usefulf} \\
+        DFA::min\_Hopcroft() & 函数运行中止   & 是 & 分析并修复   & \ref{sec:hopcroft} \\
         最小化算法运行结果汇总   & --------------   & -- & ------ & \ref{sec:listall}  \\
-        DFA::min\_Hopcroft()& 函数功能异常   & 否 & 分析       &   \\
+        DFA::min\_Hopcroft()& 函数功能异常   & 是 & 分析并修复    &  \ref{sec:fixHopcroft} \\
         \bottomrule%\hline 
     \end{tabular}
 \end{table}
@@ -402,14 +402,43 @@ for (st = 0; st < Q.size(); st++)
     \end{tabular}
 \end{table}
 
-函数 DFA::min\_Hopcroft() 是 Hopcroft 算法在 FIRE engine 中的实现，Hopcroft 算法在文中\cite{watson1993taxonomyb}描述如图 \ref{fig:desHopcroft} 所示
+函数 DFA::min\_Hopcroft() 是 Hopcroft 算法在 FIRE engine 中的实现，Hopcroft 算法的描述如算法 \ref{al:4-8} 所示\cite{watson1993taxonomyb}
 
-\begin{figure}[!htbp]
-    \centering
-        \includegraphics[trim = 0mm 0mm 0mm 4mm, clip,width=0.99\textwidth]{hopcroft}
-    \caption{ Hopcroft 算法}
-    \label{fig:desHopcroft}
-\end{figure}
+\begin{algorithm}
+    \caption{Hopcroft 最小化算法}\label{al:4-8}
+    \small
+    \begin{algorithmic}[1]
+        \State $P:=[Q]_{E_0}$;
+        \State $L:= ( \mbox{\textbf{if }} ( |F| \leq |Q \setminus F | ) \mbox{\textbf{then }} \{F\} \mbox{\textbf{else }} \{ Q \setminus F \} \mbox{\textbf{end if }} ) \times V $;
+        \State $\{ \mbox{恒有：} [Q]_E \sqsubseteq P \sqsubseteq [Q]_{E_0} \land L \subseteq (P \times V) $
+        \State \quad $ \land (\forall Q_0,Q_1,a:Q_0 \in Q \land (Q_1,a) \in L : \neg Splittable (Q_0,Q_1,a)) \Rightarrow (P=[Q]_E) \} $
+        \Repeat {$L \not= \emptyset \longrightarrow$}
+            \State $ \mbox{\textbf{let }} Q_1,a:(Q_1,a) \in L $;
+            \State $ P_{old} := P $;
+            \State $ L := L \setminus \{ (Q_1,a) \} $;
+            \State $ \{ \mbox{恒有:} [Q]_E \sqsubseteq P \sqsubseteq P_{old} \} $
+            \For {$Q_0 : Q_0 \in P_{old} \land Splittable (Q_0,Q_1,a)$}
+                \State $ Q'_0 := \{ p:p \in Q_0 \land T(p,a) \in Q_1 \} $;
+                \State $ P:= P \setminus \{ Q_0 \} \cup \{ Q_0 \setminus Q'_0,b \} $;
+                \For {$b:b \in V$}
+                    \If{$(Q_0,b) \in L$}
+                       $ L := L \setminus \{ (Q_0,b) \} \cup \{ (Q'_0,b),(Q_0, \setminus Q'_0,b ) \} $
+                    \ElsIf{$(Q_0,b) \not\in L$}
+                        \State $L:= L \cup ( \mbox{\textbf{if }} ( |Q'_0| \leq |Q_0 \setminus Q'_0 | ) \mbox{\textbf{then }} \{(Q'_0,b)\} \mbox{\textbf{else }} \{ (Q_0 \setminus Q'_0,b) \} \mbox{\textbf{end if }} ) $;
+                    \EndIf
+                \EndFor
+            \EndFor
+            \State $ \{ (\forall Q_0,Q_0 \in P : \neg Splittable(Q_0,Q_1,a)) \} $
+        \Until $\{ P = [Q]_E \}$
+    \end{algorithmic}
+\end{algorithm}
+
+% \begin{figure}[!htbp]
+%     \centering
+%         \includegraphics[trim = 0mm 0mm 0mm 4mm, clip,width=0.99\textwidth]{hopcroft}
+%     \caption{ Hopcroft 算法}
+%     \label{fig:desHopcroft}
+% \end{figure}
 
 \subsection{运行结果}\label{sec:hopcroft-error}
 执行函数 DFA::min\_Hopcroft()，程序在文件CRSet.h，第 146 行的 “assert(!iter\_end(it))” 处触发 assert 中止，如代码 \ref{lst:iterend} 所示。调用函数“CRSet::iterator()”的地方为文件min-hop.cpp，第103行，“State r(split(p, q, C.iterator(L[q]), P));”的“C.iterator(L[q])”处。
@@ -434,9 +463,9 @@ inline int CRSet::iter_end(const int it) const
 
 \subsection{错误原因}
 
-以表 \ref{tab:DFA411-1} 中实例化的自动机为例，CRSet 变量 C = \{ 0, 1\}，在程序中止处打断点，调试至此处可看到 int 变量 it 为 “2”，因 C 中只有两个值 “1、2”，所以传入参数为 “2” 时，超出可以 C 的范围，于是在语句 “assert(!iter\_end(it));” 处导致程序中止。
+以表 \ref{tab:DFA411-1} 中实例化的自动机为例，CRSet 变量 C = \{ 0, 1\}，在程序中止处打断点，调试至此处可看到 int 变量 it 为 “2”，因 C 中只有两个值 “0，1”，所以传入参数为 “2” 时，超出了 C 的范围（数组从 0 开始计数），于是在语句 “assert(!iter\_end(it));” 处导致程序中止。
 
-算法迭代过程如附录表 \ref{tab:hopcroft} 所示。
+表 \ref{tab:DFA411-1} 所示的自动机在 DFA::min\_Hopcroft 算法中迭代过程如附录表 \ref{tab:hopcroft} 所示。
 
 在第 11 次迭代中，DFA::split() 函数将等价类\{0,1,5\} 分割为等价类 \{\{0\},\{1,5\}\}，此时$p=0,q=0,r=1$，满足条件$|Q'_0| \leq | Q_0 \setminus Q'_0 |$，执行 L[r] = L[p] =1，L[p] = C.size() = 2。在第 12 次迭代中，由于第 11 次迭代中 $p=q$ ，所以 L[q] 的值将被更改为 “2”，于是在 C.iterator(L[q]) 处传入一个超过 C 的范围的值，程序触发 assert 中止。
 
@@ -477,7 +506,7 @@ inline int CRSet::iter_end(const int it) const
 
 \subsection{不改变已经是最小的 DFA 接受的语言}
 
-接受一个 $\mathcal{L}$ 的最小的 DFA 是唯一的，最小的且接受相同 $\mathcal{L}$ 的 DFA 仅仅在状态命名上有差别\cite{book1}。因此最小化算法有性质 \ref{sec:keepMin} 。
+接受同一个 $\mathcal{L}$ 的最小的 DFA 是唯一的，最小的且接受相同 $\mathcal{L}$ 的 DFA 仅仅在状态命名上有差别\cite{book1}。因此最小化算法有性质 \ref{sec:keepMin} 。
 
 \begin{property}\label{sec:keepMin}
     由定义 \ref{def:min} 可知，对于 DFA $M$，$\mathcal{L}(Min(M))= \mathcal{L}(M)$，同样的，最小化算法不能使最小的 DFA 接受的 $\mathcal{L}$ 发生改变。
@@ -502,15 +531,15 @@ inline int CRSet::iter_end(const int it) const
         \midrule%\hline
         1 &  图 \ref{fig:usefulf2-1} & 最小的 & 含有陷阱状态 \\
         2 &  图 \ref{fig:usefulf2-2} & 最小的 & 不含陷阱状态 \\
-        \midrule
-        3 & 图 \ref{fig:DFA11-0} & 最小的 & 含有开始不可达状态 \\
-        4 & 图 \ref{fig:DFA11-1} & 最小的 & 不含开始不可达状态 \\
        \midrule
         5 & 图 \ref{fig:keepMin-1-unreachable} & 最小的 & 含有开始不可达状态 \\
         6 & 图 \ref{fig:keepMin-1-nonTheState} & 最小的 & 不含开始不可达状态 \\
        \midrule
         7 & 图 \ref{fig:keepMin-2-unreachable} & 最小的 & 含有开始不可达状态 \\
         8 & 图 \ref{fig:keepMin-2-nonTheState} & 最小的 & 不含开始不可达状态 \\
+        \midrule
+        3 & 图 \ref{fig:DFA11-0} & 最小的 & 含有开始不可达状态 \\
+        4 & 图 \ref{fig:DFA11-1} & 最小的 & 不含开始不可达状态 \\
         \bottomrule%\hline  
     \end{tabular}
 \end{table}
@@ -708,15 +737,134 @@ current = -1
 
 本小节总结如下
 \begin{itemize}
-    \item FIRE engine 对于算法 “DFA::min\_Hopcroft()” 和算法 “DFA::min\_Brzozowski” 的实现仍然有不足之处；
-    \item FIRE engine 对于算法“DFA::min\_HopcroftUllman()”、“DFA::min\_dragon()”、\\ “DFA::min\_Watson()” 的实现可信度较高。  
+    \item FIRE engine 对于算法 “DFA::min\_Brzozowski” 的实现仍然有不足之处；
+    \item FIRE engine 对于算法“DFA::min\_HopcroftUllman()”、“DFA::min\_dragon()”、\\ “DFA::min\_Watson()” 的实现可信度较高；
+    \item 对于算法 “DFA::min\_Hopcroft()” 的更进一步测试见下节内容。
 \end{itemize}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{DFA::min\_Hopcroft 算法分析}
+\newpage
+\section{DFA::min\_Hopcroft 算法运行结果错误}\label{sec:fixHopcroft}
 
-以表 \ref{tab:MinData} 中第三个数据，也即图 \ref{fig:DFAMin-3-1} 中的 DFA 为例，此 DFA 在 DFA::min\_Hopcroft 算法中的迭代过程如表 \ref{tab:hopcroftAna} 所示，算法原型见图 \ref{fig:desHopcroft}：
+\subsection{运行结果}
+
+以图 \ref{fig:hopcerror} 中的五个最小的 DFA 为数据，测试结果统计如表 \ref{tab:KeepMinResultofAll} 所示
+
+\begin{table}[!htbp]
+    \caption{  }
+    \label{tab:KeepMinResultofAll}
+    \centering
+    \small% fontsize
+    \setlength{\tabcolsep}{4pt}% column separation
+    \renewcommand{\arraystretch}{1.2}%row space 
+    \begin{tabular}{l|p{4em}<{\centering} p{4em}<{\centering} p{4em}<{\centering} p{4em}<{\centering} p{4em}<{\centering} }  %l p{3em}<{\centering} p{3em}<{\centering} p{3em}<{\centering}
+        \toprule %\hline 
+        算法 & \ref{fig:hoperror--1} & \ref{fig:hoperror--2} & \ref{fig:hoperror--3} & \ref{fig:hoperror--4} &  \ref{fig:hoperror--5}  \\
+        \midrule
+        DFA::min\_Brzozowski()        & $\surd$ & $\surd$ & $\surd$ & $\surd$     & $\surd$        \\
+        DFA::min\_Hopcroft()（修改前） & 中止    & $\times$ & $\surd$ & 中止        & $\surd$       \\
+        DFA::min\_Hopcroft()（修改后） & $\times$& $\times$& $\surd$ & $\times$    & $\surd$       \\
+        DFA::min\_HopcroftUllman()    & $\surd$ & $\surd$ & $\surd$ & $\surd$     & $\surd$       \\
+        DFA::min\_dragon()            & $\surd$ & $\surd$ & $\surd$ & $\surd$     & $\surd$       \\
+        DFA::min\_Watson()            & $\surd$ & $\surd$ & $\surd$ & $\surd$     & $\surd$       \\
+        \bottomrule%\hline  
+    \end{tabular}
+\end{table}
+
+对于图 \ref{fig:hoperror--1} ，修改后 Hopcroft 算法输出如下代码 \ref{FCode1}，如图 \ref{fig:hoperror--1-result} 所示。
+
+\begin{lstlisting}[language=bash,label={FCode1},caption={图 \ref{fig:hoperror--1} 输出}]
+    DFA
+    Q = [0,3)
+    S = { 0 }
+    F = { 2 }
+    Transitions =
+    0->{ 'a'->1  'b'->2 }
+    1->{ 'a'->2 }
+    2->{ 'b'->2 }
+
+    current = -1
+\end{lstlisting}
+ 
+对于图 \ref{fig:hoperror--2} ，无论是否修改，Hopcroft均输出代码 \ref{FCode2}，如图 \ref{fig:hoperror--2-result} 所示。
+\begin{lstlisting}[language=bash,label={FCode2},caption={图 \ref{fig:hoperror--2} 输出}]
+    DFA
+    Q = [0,2)
+    S = { 0 }
+    F = { 1 }
+    Transitions =
+    0->{ ['a','b']->1 }
+    1->{ 'b'->1 }
+
+    current = -1
+\end{lstlisting}
+
+对于图 \ref{fig:hoperror--4} , 修改后 Hopcroft 输出代码 \ref{FCode4}，如图 \ref{fig:hoperror--4-result} 所示。
+\begin{lstlisting}[language=bash,label={FCode4},caption={图 \ref{fig:hoperror--4} 输出}]
+    DFA
+    Q = [0,3)
+    S = { 0 }
+    F = { 2 }
+    Transitions =
+    0->{ 'a'->1 }
+    1->{ 'b'->2 }
+    2->{ 'a'->2 }
+
+    current = -1
+\end{lstlisting}
+
+
+\begin{figure}[!htbp]
+    \centering
+    \begin{subfigure}[b]{0.7\textwidth}
+        \includegraphics[width=\textwidth]{keepMin/hoperror--1-result}
+        \caption{$\mathcal{L}=\{aa(b)^* \cup b(b)^*\}$}
+        \label{fig:hoperror--1-result}
+    \end{subfigure}
+    \\
+    %\vfill% \vspace{1cm}
+    \begin{subfigure}[b]{0.7\textwidth}
+        \includegraphics[width=\textwidth]{keepMin/hoperror--2-result}
+        \caption{$\mathcal{L}=\{a(b)^* \cup b(b)^*\}$}
+        \label{fig:hoperror--2-result}
+    \end{subfigure}
+    \\
+    %\vfill% \vspace{1cm}
+    \begin{subfigure}[b]{0.7\textwidth}
+        \includegraphics[width=\textwidth]{keepMin/hoperror--4-result}
+        \caption{$\mathcal{L}=\{ab(a)^*\}$}
+        \label{fig:hoperror--4-result}
+    \end{subfigure}
+    \caption{Hopcroft 算法的输出 }
+    \label{fig:hopcerror-result}
+  \end{figure}
+
+  表 \ref{tab:KeepMinResultofAll-hop} 为对比数据
+
+  \begin{table}[!htbp]
+    \caption{  }
+    \label{tab:KeepMinResultofAll-hop}
+    \centering
+    \small% fontsize
+    \setlength{\tabcolsep}{4pt}% column separation
+    \renewcommand{\arraystretch}{1.2}%row space 
+    \begin{tabular}{c p{2em}<{\centering}p{2em}<{\centering}ccc }  %l p{3em}<{\centering} p{3em}<{\centering} p{3em}<{\centering}
+        \toprule %\hline 
+        数据 & $|Q|$ & $|F|$ & $|F|\leq |Q \setminus F|$? & 修改前结果 &  修改后结果  \\
+        \midrule
+        图 \ref{fig:hoperror--1}        & 5 & 3 & 否 & 中止       & $\times$        \\
+        图 \ref{fig:hoperror--2}        & 3 & 2 & 否 & $\times$   & $\times$       \\
+        图 \ref{fig:hoperror--3}        & 4 & 2 & 是 & $\surd$    & $\surd$       \\
+        图 \ref{fig:hoperror--4}        & 5 & 3 & 否 & 中止       & $\times$       \\
+        图 \ref{fig:hoperror--5}        & 5 & 2 & 是 & $\surd$    & $\surd$       \\
+        \bottomrule%\hline  
+    \end{tabular}
+\end{table}
+
+\subsection{错误原因}\label{sec:reason-hopcroft}
+
+以表 \ref{tab:MinData} 中第三个数据，也即图 \ref{fig:DFAMin-3-1} 中的 DFA 为例，此 DFA 在 DFA::min\_Hopcroft 算法中的迭代过程如表 \ref{tab:hopcroftAna} 所示，算法原型见算法 \ref{al:4-8}：
 
 \begin{table}[!htbp]
     \caption{图\ref{fig:DFAMin-3-1}的 DFA 在 DFA::min\_Hopcroft 算法中的迭代过程}
@@ -752,10 +900,254 @@ current = -1
 表 \ref{tab:hopcroftAna} 中各项意义见附录表 \ref{tab:hopcroft} 。
 下面对 Hopcroft 算法进行分析：
 \begin{enumerate}[(1)]
-    \item $Q$ 首先被分为两个等价类，$P=(Q\setminus F) \cup F = \{(0),(1,2)\}$ 。因 $|Q\setminus F|\le |F|$，所以 $L=F\times V$；
-    \item 第一次迭代，取出 $repr$ 第一个元素 $0$，赋值给$p$，此时 $p=0,q=0,C=b$，并且从$L$ 内移除与字符 'b' 相关的转移关系，$Splittable(p,q,c)$不成功，不做操作；
+    \item $Q$ 首先被分为两个等价类，$P=(Q\setminus F) \cup F = \{(0),(1,2)\}$ 。因 $|Q\setminus F|\le |F|$，所以 $L=F\times V$ （算法 \ref{al:4-8} ，语句 2）；
+    \item 第一次迭代，取出 $repr$ 第一个元素 $0$，赋值给$p$，此时 $p=0,q=0,C=b$，并且从$L$ 内移除与字符 'b' 相关的转移关系，$Splittable(p,q,c)$不成功\footnote{ 即表 \ref{tab:hopcroftAna} 中 $r=-1$ 时，$Splittable(p,q,c)$不成功。}，不做操作；
     \item 第二次迭代，取出 $repr$ 第一个元素 $1$，赋值给$p$，此时$p=1,q=0,C=b$，$Splittable(p,q,c)$不成功，不做操作；
     \item 第三次迭代，取出 $repr$ 第一个元素 $0$，赋值给$p$，此时$p=0,q=0,C=a$，并且从$L$ 内移除与字符 'b' 相关的转移关系，$Splittable(p,q,c)$不成功，不做操作；
     \item 第四次迭代，取出 $repr$ 第一个元素 $1$，赋值给$p$，此时$p=1,q=0,C=a$，$Splittable(p,q,c)$不成功，不做操作；
-    \item 第五次迭代，此时 $L$ 内已经没有转移关系，算法结束。
+    \item 第五次迭代，此时 $L$ 内已经没有转移关系，也就是此时 $L=\emptyset$ （算法 \ref{al:4-8} ，语句 5），迭代结束。此时 $P=\{ \{0\},\{1,2\} \}$ ，于是状态$1$与状态$2$被合并，算法输出如图 \ref{fig:DFAMin-3-3-inside} 所示的结果。算法结束。
 \end{enumerate}
+
+\begin{definition}[$Splittable$\cite{watson1993taxonomyb}]
+    % $Splittable$ 的定义如下 \\
+    % $~~ Splittable(Q_0 ,Q_1, a) \equiv ( \exists ~ p,q : p \in Q_0 \land q \in Q_0 : ( T(p,a) \in Q_1 \not\equiv T(q,a) \in Q_1  ) ) $
+    $Splittable$ 的定义如下
+    \[  Splittable(Q_0 ,Q_1, a) \equiv ( \exists ~ p,q : p \in Q_0 \land q \in Q_0 : ( T(p,a) \in Q_1 \not\equiv T(q,a) \in Q_1  ) ) \]
+\end{definition}
+
+
+
+FIRE engine 对 $Splittable$ 的实现如算法 \ref{al:split} 所示。
+
+\begin{algorithm}
+    \caption{ DFA::split() }\label{al:split}
+    %\small
+    \begin{algorithmic}[1]
+        \Function{split}{$p,q,c,P$} \Comment{$p \in repr$，$c \in V$ ，$P:= [A]_E$（定义\ref{def:equiv-class}）}
+            \Statex \Comment{$q$为 $L$ 中第一个不为 0 的元素的下标}
+            \State $part := \emptyset$ 
+            \ForAll{$s \in [p]$} \Comment{$[p]$ 为状态 $p$ 所在的等价类}
+                \If{ $T(s,c) \ne \emptyset \land T(s,c) \in [q]$ }
+                    \State $part := part \cup T(s,c)$
+                \EndIf
+            \EndFor
+            \If {$part \ne [p] \land part \ne \emptyset$}
+                \State $otherpiece := [p] \setminus part$
+                \If {$p \in part$}
+                    \State {\bfseries return} {$part$}
+                \Else
+                    \State {\bfseries return} {$otherpiece$}
+                \EndIf
+            \Else
+                \State {\bfseries return } {Invalid}
+            \EndIf
+        \EndFunction
+        % \State 其中：
+        % \State A 是一个 DFA;
+        % \State $P:= [A]_E$
+        % \State $[p]$ 为状态 $p$ 所在的等价类 
+    \end{algorithmic}
+\end{algorithm}
+
+在本例中，由于 $L=(Q \setminus F) \times V$， $L$ 中第一个不为0的元素的下标是 “0” （ $L$ 的意义见附录注释 \ref{rem:means-of-L} ），$q$ 的值即为 L 中第一个不为 0 的元素的下标，此时 $q = 0$ 。依次取出 $repr = \{ 0,1 \}$ 中的元素，对所有的 $c \in V$ 执行 DFA::split() 。当 $p=0 \land q=0 $ 时，$[p]$ 中不能通过任何字符转移到 $[q]$ ；当 $p=1 \land q=0 $ 时，$[p]$ 中不能通过任何字符转移到 $[q]$ 。此时算法运行结束，但是等价类 $\{1,2 \}$ 此时还未被分割，等价类 $\{1,2 \}$ 被合并，成为新自动机（图 \ref{fig:DFAMin-3-3-inside}）中的 $\{ 1\}$ 于是 Hopcroft 算法输出了错误的结果。
+
+通过对比总结可知，导致 Hopcroft 算法输出错误结果的非完全 DFA 满足式 \ref{eq:reson-hopcroft}
+
+\begin{equation}\label{eq:reson-hopcroft} 
+    (c,p: \forall c \in V \land p \in F \land T(p,c) \notin (Q\setminus F) ) \land |F| > |Q \setminus F| 
+\end{equation}
+
+\newpage
+\subsection{解决方法}
+
+由第 \ref{sec:reason-hopcroft} 的内容，总结出以下两种解决方案：
+
+\begin{enumerate}[(1)~]
+    \item 向 $L$ 中增加二元关系 $F\times V$，也即更改算法 \ref{al:4-8} 中语句 2 $L:= ( \mbox{\textbf{if }} ( |F| \leq |Q \setminus F | ) \mbox{\textbf{then }} \{F\} \mbox{\textbf{else }} \{ Q \setminus F \} \mbox{\textbf{end if }} ) \times V $ 为 $ L:= (Q\times V) \cup F\times V $；
+    \item 构造完全 DFA，使得对于满足关系 $|F| > |Q \setminus F|$ 的非完全 DFA中，存在 $ c \in V $ 使得 $ p \in F \land T(p,c) \in (Q\setminus F) $；
+\end{enumerate}
+
+\subsubsection{具体做法}
+
+{\bfseries 方案 1}
+
+对于方案 1 ，对 FIRE engine 的具体更改如下
+
+\begin{lstlisting}[language=C++,label={lst:min-hop},caption={min-hop.cpp}]
+    if (F.size() <= (Q.size() - F.size()))   //移除
+	{                                        //移除
+		repr.intersection(F);                //移除
+	}                                        //移除
+	else                                     //移除
+	{                                        //移除
+		repr.remove(F);                      //移除
+	}                                        //移除
+\end{lstlisting}
+
+Hopcroft 算法（算法 \ref{al:4-8}）的正确性已经被证实过\cite{Hopc71,HUFFMAN1954161,yingjie2009describing}，该算法也是时间复杂度最优的版本，按照方案 1 更改将会导致算法的时间复杂度增加，并不符合算法本意。
+
+方案 1 更改后的算法实际上是 Bruce William Watson 的论文中提及的未优化的算法，该算法如算法 \ref{al:hopcroft-old} 所示。
+
+\begin{algorithm}
+    \caption{ \cite{watson1993taxonomyb} }\label{al:hopcroft-old}
+    \small%\footnotesize
+    \begin{algorithmic}[1]
+        \State $P:=[Q]_{E_0}$;
+        \State $L:=P\times V$;
+        \State $\{ \mbox{恒有：} [Q]_E \sqsubseteq P \sqsubseteq [Q]_{E_0} \land L \subseteq (P \times V) $
+        \State \quad $ \land L \supseteq  \{ (Q_1,a) : (Q_1,a) \in (P \times V) \land ( \exists Q_0 : Q_0 \in P : Splittable (Q_0,Q_1,a) ) \} $
+        \State \quad $ \land (\forall Q_0,Q_1,a:Q_0 \in Q \land (Q_1,a) \in L : \neg Splittable (Q_0,Q_1,a)) \Rightarrow (P=[Q]_E) \} $
+        \Repeat{$L \not= \emptyset \longrightarrow$}
+            \State $ \mbox{\textbf{let }} Q_1,a:(Q_1,a) \in L $;
+            \State $ P_{old} := P $;
+            \State $ L := L \setminus \{ (Q_1,a) \} $;
+            \State $ \{ \mbox{恒有:} [Q]_E \sqsubseteq P \sqsubseteq P_{old} \} $
+            \For {$Q_0 : Q_0 \in P_{old} \land Splittable (Q_0,Q_1,a)$}
+                \State $ Q'_0 := \{ p:p \in Q_0 \land T(p,a) \in Q_1 \} $;
+                \State $ P:= P \setminus \{ Q_0 \} \cup \{ Q_0 \setminus Q'_0,b \} $;
+                \For {$b:b \in V$}
+                    \If{$(Q_0,b) \in L$}
+                       $ L := L \setminus \{ (Q_0,b) \} \cup \{ (Q'_0,b),(Q_0, \setminus Q'_0,b ) \} $
+                    \ElsIf{$(Q_0,b) \not\in L$}
+                        $ L := L \cup \{ (Q'_0,b),(Q_0, \setminus Q'_0,b ) \}$
+                    \EndIf
+                \EndFor
+            \EndFor
+            \State $ \{ (\forall Q_0,Q_0 \in P : \neg Splittable(Q_0,Q_1,a)) \} $
+        \Until $\{ P = [Q]_E \}$
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{remark}
+    对于算法 \ref{al:hopcroft-old} 中语句 2 ，在算法的第一步，将 $Q$ 分为两个等价类 $ P = \{ \{Q\setminus F\}, F \}$，对应方案 1 的更改方法。
+\end{remark}
+
+并且 Bruce William Watson 也对 Hopcroft 算法（算法 \ref{al:4-8}）中语句 2 进行了详细的说明，Bruce William Watson 已经指出，由于一开始就将 $Q$ 分割成了 $P=[Q]_{E_{0}}=\{Q \backslash F, F\}$ ,所以只需要相对于 $(Q \backslash F, b)$ or $(F, b)$ （对所有的 $b \in V $）进行等价类分割即可\cite{Hopc71,watson1993taxonomyb}。所以方案 1 并不是一个比较好的方法。
+
+按照方案 1 更改后 DFA::min-Hopcroft 通过样例测试，如表 \ref{tab:KeepMinResultofAll-fix1} 所示。
+
+\begin{table}[!htbp]
+    \caption{  }
+    \label{tab:KeepMinResultofAll-fix1}
+    \centering
+    %\small% fontsize
+    \setlength{\tabcolsep}{6pt}% column separation
+    \renewcommand{\arraystretch}{1.2}%row space 
+    \begin{tabular}{l| ccccc }  %l p{3em}<{\centering} p{3em}<{\centering} p{3em}<{\centering}
+        \toprule %\hline 
+        算法 & \ref{fig:hoperror--1} & \ref{fig:hoperror--2} & \ref{fig:hoperror--3} & \ref{fig:hoperror--4} &  \ref{fig:hoperror--5}  \\
+        \midrule
+        DFA::min\_Brzozowski()        & $\surd$ & $\surd$ & $\surd$ & $\surd$     & $\surd$        \\
+        DFA::min\_Hopcroft()（方案1修改前） & $\times$    & $\times$ & $\surd$ & $\times$        & $\surd$       \\
+        DFA::min\_Hopcroft()（方案1修改后） & $\surd$& $\surd$& $\surd$ & $\surd$    & $\surd$       \\
+        DFA::min\_HopcroftUllman()    & $\surd$ & $\surd$ & $\surd$ & $\surd$     & $\surd$       \\
+        DFA::min\_dragon()            & $\surd$ & $\surd$ & $\surd$ & $\surd$     & $\surd$       \\
+        DFA::min\_Watson()            & $\surd$ & $\surd$ & $\surd$ & $\surd$     & $\surd$       \\
+        \bottomrule%\hline  
+    \end{tabular}
+\end{table}
+
+{\bfseries 方案 2}
+
+FIRE engine 中没有实现构造完全 DFA 的算法。
+
+本文提出一个用于在 FIRE engine 中构造一个完全 DFA 的算法，如算法 \ref{al:complete-M} 所示。
+
+\begin{algorithm}
+    \caption{ 构造完全 DFA 的算法 }\label{al:complete-M}
+    %\small%\footnotesize
+    \begin{algorithmic}[1]
+        \Require 一个DFA $M=\{Q,V,T,E,S,F\}$
+        \Ensure 一个与 $M$ 等价的完全 DFA $M'=\{Q',V,T',E,S,F\}$
+        \Statex \Comment{$M$ 与 $M'$ 满足定义 \ref{def:isom}}
+        \Function{complete}{}
+            \State {$flag:=false$};
+            \ForAll {$p \in Q \land flag=false$}
+                \ForAll{$c \in V \land flag=false$}
+                    \If{ $ T(p,c) = \emptyset $ }
+                         {$flag:=true$}
+                    \EndIf
+                \EndFor
+            \EndFor
+            \If{flag=true}
+                \State $usefulf(M)$; \Comment{移除 $M$ 中的陷阱状态}
+                \State $usefuls(M)$; \Comment{移除 $M$ 中的开始不可达状态}
+                \ForAll {$p \in Q \land flag=false$}
+                    \ForAll{$c \in V \land flag=false$}
+                        \If{ $ T(p,c) \not= \emptyset $ }
+                            $T':= T' \cup T'(g(p)\times c \times g(T(p,c)))$
+                        \Else
+                            $~~T' := T' \cup T'(g(p)\times c \times \mbox{\bfseries sink})$
+                        \EndIf
+                    \EndFor
+                \EndFor
+            \EndIf
+        \EndFunction
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{remark}
+    构造完全自动机本应该仅对于满足 $ p,c:p\in Q \land c \in V: T(p,c)= \emptyset$ 的状态，增加转移关系 $T(p \times c \times sink)$ , $p,c$ 满足 $ p,c:p\in Q \land c \in V $。但是考虑到原本的 DFA 中可能有多个不可达状态，若仅仅构造完全 DFA ，DFA 的大小仍然会变大，所以应该在构造完全 DFA 前，移除 DFA 中的不可达状态，然后再构造完全 DFA 。这样构造出来的完全 DFA ，仅比原本的 DFA 移除不可达状态后多一个状态（陷阱状态）。有利于缩短算法的运行时间。
+    
+    公式表达形式为（若原 DFA 含不可达状态）
+    \begin{equation}
+        |Min(Complete( useful (M)))| \leq |Min(M)|
+    \end{equation}
+\end{remark}
+
+\begin{remark}
+    对于接受同一个 $\mathcal{L}$ 的最小的但不完全 DFA $M$ 和最小且完全的 DFA $M_{\mathcal{C}}$， $M_{\mathcal{C}}$ 比 $M$ 多一个陷阱状态（Sink State）\cite{watson1993taxonomyb}。
+\end{remark}
+
+需要留意的是，FIRE engine 中仅实现了用于去除陷阱状态的函数 DFA::usefulf() ，而没有实现用于去除开始状态的函数，虽然不可达状态并不会影响 DFA 接受的 $\mathcal{L} $。但是不可达状态同样会影响算法的时间复杂度。
+
+给出一个用于在 FIRE engine 内去除 DFA 的开始不可达状态的算法
+
+\begin{algorithm}
+    \caption{ 移除 DFA 中开始不可达状态的算法 $usefuls$ }\label{al:usefuls}
+    %\small%\footnotesize
+    \begin{algorithmic}[1]
+        \Require 一个含有开始不可达状态的 DFA $M=\{Q,V,T,E,S,F\}$
+        \Ensure 一个与 $M$ 等价的完全 DFA $M'=\{Q',V,T',E,S',F'\}$
+        \Statex \Comment{$M$ 与 $M'$ 满足定义 \ref{def:isom}}
+        \Function{usefuls}{}
+            \State $Q' := SReachable(M) $
+            \ForAll{$p \in Q'$}
+                \ForAll {$c \in V$}
+                    \If {$T(p,c) \ne \emptyset$}
+                        \State $ T' := T' \cup T'(p\times c \times q) $
+                        \State $ V' := V' \cup c $
+                    \EndIf
+                \EndFor
+            \EndFor
+            \State $S':=Q' \cap S$
+            \State $F':=Q' \cap F$
+        \EndFunction
+    \end{algorithmic}
+\end{algorithm}
+
+同样的， FIRE engine 中并没有实现 $SReachable()$ ， 本文给出这样一个算法
+
+\begin{algorithm}
+    \caption{ $SReachable$ }\label{al:SReachable}
+    \small%\footnotesize
+    \begin{algorithmic}[1]
+        \Require 一个 DFA $M=\{Q,V,T,E,S,F\}$
+        \Ensure $SReachable(M)$
+        \Statex %\Comment{$M$ 与 $M'$ 满足定义 \ref{def:isom}}
+        \Function{SReachable}{}
+            \State $ Q_1 := S $
+            \Repeat
+                \State $Q_1 := Q_1 \cup Q_2 $
+                \ForAll{$p \in Q_1$}
+                    \ForAll {$ c \in V $}
+                        \If{$ T(p,c) \ne \emptyset$}
+                            $ Q_2 := Q_2 \cup T(p,c)  $
+                        \EndIf
+                    \EndFor
+                \EndFor
+            \Until{$Q_1 = Q_2$}
+            \State {\bfseries return} {~~$Q_2$}
+        \EndFunction
+    \end{algorithmic}
+\end{algorithm}

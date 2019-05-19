@@ -45,7 +45,7 @@
 %     something to write。
 % \end{definition}
 
-\begin{definition}[等价关系的等价类\cite{watson1993taxonomyb}]
+\begin{definition}[等价关系的等价类\cite{watson1993taxonomyb}]\label{def:equiv-class}
     对任何集合 $A$ 上的等价关系 $E$，我们使用 $[A]_E$代表等价类\footnote{等价关系和等价类稍后说明} 集合，即：
 $$ [A]_E = \{ [a]_E :a \in A \} $$
 集合 $[A]_E$ 也叫做 $A$ 的由 $E$ 引出的划分（partition）。
@@ -114,15 +114,16 @@ $$ [A]_E = \{ [a]_E :a \in A \} $$
 \end{example}
 
 \begin{remark}
-    为了在某些情况下方便的展示状态之间的关系，也把状态转移图写成表格\cite{book1}，如图\ref{fig:state_graph}中的自动机，写成表格\ref{tab:sample}：
+    为了在某些情况下方便的展示状态之间的关系，也把状态转移图写成表格\cite{book1}，如图\ref{fig:state_graph}中的自动机，写成表 \ref{tab:sample}：
 \begin{table}[!htbp]
     \caption{状态转移函数}
     \label{tab:sample}
     \centering
     \small% fontsize
-    \setlength{\tabcolsep}{4pt}% column separation
+    \setlength{\tabcolsep}{6pt}% column separation
     \renewcommand{\arraystretch}{1.2}%row space 
-    \begin{tabular}{l p{4em}<{\centering} p{1em}<{\centering} p{1em}<{\centering} p{1em}<{\centering} p{1em}<{\centering}} 
+    % \begin{tabular}{l p{4em}<{\centering} p{2em}<{\centering} p{2em}<{\centering} p{2em}<{\centering} p{2em}<{\centering}} 
+    \begin{tabular}{lccccc}
         \toprule%\hline 
         \multirow{2}{*}{状态说明} & \multirow{2}{*}{状态} & \multicolumn{4}{c}{输入字符} \\
 		\cline{3-6}      &    &$a$ & $b$ & $1$ & $\epsilon$ \\
@@ -139,7 +140,7 @@ $$ [A]_E = \{ [a]_E :a \in A \} $$
 
 
 %\newpage
-表格\ref{tab:sample}的状态之间的关系与$T=\{(q_0 \times b \times q_1),(q_1\times a \times q_2),(q_2\times 1 \times q_2)\}$，$E=(q_1 \times q_2)$一一对应，“\mbox{-}” 表示没有相应的转移关系。下文中将表格\ref{tab:sample}简称为转移函数。
+表格\ref{tab:sample}的状态之间的关系与$T=\{(q_0 \times b \times q_1),(q_1\times a \times q_2),(q_2\times 1 \times q_2)\}$，$E=(q_1 \times q_2)$一一对应，“\mbox{-}” 表示没有相应的转移关系。%%下文中将表格\ref{tab:sample}简称为转移函数。
 
 \begin{remark}[转移关系的表示]
     为了更加简洁的描述转移关系，用 “$T=(q_0 \times b \times q_1)$” 来代表图 \ref{fig:state_graph} 中的 “状态 $q_0$ 接收字符 ‘b’ 转移到状态 $q_1$”。
@@ -157,7 +158,7 @@ $$ [A]_E = \{ [a]_E :a \in A \} $$
     定义一个FA的大小为$|M|=|Q|$。
 \end{definition}
 
-\begin{definition}[FA 的同构$\cong$]
+\begin{definition}[FA 的同构$\cong$]\label{def:isom}
     我们把同构定义为FA的等价关系。当且仅当 $V_0=V_1$，并且存在双射$g\in Q_0 \longrightarrow Q_1$ ，使得
 \begin{itemize}
     \item $T_1 = \{ (g(p,q),a,g(q)) : (p,a,q) \in T_0 \}$
@@ -215,7 +216,7 @@ $$ [A]_E = \{ [a]_E :a \in A \} $$
 \end{definition}
 
 \begin{definition}[可达状态 \cite{watson1993taxonomya}]
-    可达状态是分为 “开始可达状态” 和 “可达结束状态” （ $M$ 中），其中
+    可达状态分为 “开始可达状态” 和 “可达结束状态” （ $M$ 中），其中
     \begin{itemize}
         \item 开始可达状态：从开始状态可以到达的状态，写作 $SReachable(M)$；
         \item 可达结束状态： 能到达结束状态的状态，写作 $FReachable(M)$；
@@ -312,7 +313,8 @@ $Min_{\mathcal{C}}$ 仅定义在完全 DFA 上。
                                     &   & {\bfseries end} &                               \\
         \end{tabular}
     \end{table}
-\\除了性质 $ \mathcal{L}_{FA}(subset(M))= \mathcal{L}_{FA}(M) $（对所有的$M \in FA$）之外， 函数 $ useful_s $ 还满足
+% \\除了性质 $ \mathcal{L}_{FA}(subset(M))= \mathcal{L}_{FA}(M) $（对所有的$M \in FA$）之外，
+ \\ 函数 $ useful_s $ 满足
 \[  (\forall M : M \in FA : Useful_s ( useful_s(M) ) \land \mathcal{L}_{FA} (useful_s(M)) = \mathcal{L}_{FA}(M)) \]
 \end{transformation}
 
@@ -331,7 +333,9 @@ $Min_{\mathcal{C}}$ 仅定义在完全 DFA 上。
                                           &   & {\bfseries end} &                               \\
         \end{tabular}
     \end{table}
-    \\有时候也把它说成“幂集”构造。
+    \\除了性质 $ \mathcal{L}_{FA}(subset(M))= \mathcal{L}_{FA}(M) $（对所有的$M \in FA$）之外，函数 $subset$ 还满足
+    \[ (\forall M : M \in FA \land \epsilon \mbox{-} free(M) : Det(subset(M)) \land Complete(subset(M))) \]
+    有时候也把它说成“幂集”构造。
 \end{transformation}
 
 
@@ -428,10 +432,13 @@ $Min_{\mathcal{C}}$ 仅定义在完全 DFA 上。
     \item 对于状态对$(q_0,q_2)$，$T(q_0,0)=q_1$，$T(q_2,0)=q_1$，不做处理，再看$T(q_0,1)=q_2$，$T(q_2,1)=q_4$，此时状态对$(q_0,q_4)$已经被标记，那么标记$(q_0,q_2)$；
     \item 对于状态对$(q_1,q_2)$，$T(q_1,0)=q_2$，$T(q_2,0)=q_1$，不做处理，再看$T(q_1,1)=q_3$，$T(q_2,1)=q_4$，此时状态对$(q_3,q_4)$未被标记，无操作；
     \item 对于状态对$(q_3,q_4)$，$T(q_3,0)=q_3$，$T(q_4,0)=q_3$，不做处理，再看$T(q_3,1)=q_4$，$T(q_4,1)=q_4$，不做处理；
-    \item 算法结束。
+    \item 第一次迭代结束，此时还有状态对$(q_1,q_2)$和$(q_3,q_4)$未被标记。
+    \item 对于状态对$(q_1,q_2)$，根据第(4)步，算法无操作；
+    \item 对于状态对$(q_3,q_4)$，根据第(5)步，算法无操作；
+    \item 本次迭代未标记任何状态对，算法结束，此时还有状态对$(q_1,q_2)$和$(q_3,q_4)$未被标记。
 \end{enumerate}
 
-此时还有状态对$(q_1,q_2)$和$(q_3,q_4)$未被标记，也就是说$q_1 \equiv q_2$，$q_3 \equiv q_4$。此时的 DFA 为图 \ref{fig:DFAMin-3-0-minexample-rel}。
+算法结束后还有状态对$(q_1,q_2)$和$(q_3,q_4)$未被标记，也就是说$q_1 \equiv q_2$，$q_3 \equiv q_4$。此时的 DFA 为图 \ref{fig:DFAMin-3-0-minexample-rel}。
 
 \begin{figure}[!htbp]
     \centering

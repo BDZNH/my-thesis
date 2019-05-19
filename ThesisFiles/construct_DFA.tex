@@ -1,3 +1,4 @@
+%!TEX root = ../Demo.tex
 \chapter{类 DFA 及相关类的设计}\label{cha:construct-dfa}
 
 本章对类 DFA 做简要说明，说明如何实例化一个类 DFA 对象，作为第\ref{cha:realwork}章的测试的准备工作。类 DFA 为 FIRE engine 中应用最小化算法的类，类 FA 、类 RFA、类 RBFA 、类 LBFA 与类 DFA 都继承自类 FAabs ，它们之间的关系如图 \ref{fig:FAabsRel} 所示。
@@ -305,7 +306,7 @@ const State Invalid = -1;
     \label{fig:DFA1}
 \end{figure}
 
-\newpage
+% \newpage
 图\ref{fig:DFA1}中的自动机的转移函数如表\ref{tab:DFA1}
 
 \begin{table}[!htbp]

@@ -1,7 +1,7 @@
 %!TEX root = ../Demo.tex
 \chapter{算法迭代过程}
 \begin{table}[!htbp]
-    \caption{图\ref{fig:DFA11-0}的 DFA 在 DFA::min\_Hopcroft 算法中的迭代过程}
+    \caption{图 \ref{fig:DFA11-0} 的 DFA 在 DFA::min\_Hopcroft 算法中的迭代过程}
     \label{tab:hopcroft}
     \centering
     \footnotesize% fontsize
@@ -58,7 +58,7 @@
 
 表 \ref{tab:hopcroft} 中的表头与 FIRE engine 中 Hopcroft 算法的实现中的变量一一对应。其中
 \begin{itemize}
-    \item $n$ 为迭代次数；
+    \item $n$ 为迭代次数（FIRE engine 中无此变量，为了方便描述算法迭代过程添加）；
     \item “状态”意指进行等价类分割前和等价类分割后；
     \item $p$ 为当前要进行等价类分割的等价类；
     \item $q$ 为等价类分割的参数，$q \in Q$；
@@ -69,3 +69,7 @@
     \item $repr$ 为 等价类代表集合，其值为 $P$ 中每个等价类中最小的状态的集合；
     \item $P$ 为等价类集合；
 \end{itemize}
+
+\begin{remark}\label{rem:means-of-L}
+    Hopcroft 算法（算法 \ref{al:4-8}）中的 “$L$” 存储的是二元关系 $F \times V$ 或 $(Q \setminus F) \times V$ ， FIRE engine 中的 “$L$” 是一个一维整型数组，其中第 $i$ 个元素的值表示第 $i$ 个状态还需要处理的字符数目。当 FIRE engine 中的 “$L$” 数组内所有元素的值全部为 0 时，算法迭代结束。
+\end{remark}

@@ -1,5 +1,5 @@
 %!TEX program = xelatex
-\documentclass[WordOneHalf,adobe]{XDUthesis}
+\documentclass[WordOneHalf]{XDUthesis}
 % 参数设置：
 %     功能设置：
 %         <nologo>:      封面页去除logo（默认有logo）
@@ -87,6 +87,13 @@
 % \usepackage{bicaption}
 % \usepackage{clrscode3e}
 
+%%  算法项目的设置
+% \setcounter{algorithm}[chapter] %% 算法编号
+\renewcommand{\thealgorithm}{\arabic{chapter}.\arabic{algorithm}} %% 算法编号
+\algrenewcommand\algorithmicrepeat{\textbf{do~}}
+\algrenewcommand\algorithmicuntil{\textbf{od}}
+\algrenewcommand\algorithmicthen{$\longrightarrow$}
+
 \renewcommand{\algorithmicrequire}{\bfseries 输入： } %Use Input in the format of Algorithm
 \renewcommand{\algorithmicensure}{\bfseries 输出： } %UseOutput in the format of Algorithm
 
@@ -136,7 +143,8 @@
 \input{ThesisFiles/Gpaphics.tex}
 \input{ThesisFiles/table.tex}
 \input{ThesisFiles/mycode.tex}
-\input{ThesisFiles/extend.tex}
+\input{ThesisFiles/ClassDiagram.tex}
+%\input{ThesisFiles/extend.tex}
 
 \end{document}
 
