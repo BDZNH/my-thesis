@@ -739,7 +739,8 @@ current = -1
 \begin{itemize}
     \item FIRE engine 对于算法 “DFA::min\_Brzozowski” 的实现仍然有不足之处；
     \item FIRE engine 对于算法“DFA::min\_HopcroftUllman()”、“DFA::min\_dragon()”、\\ “DFA::min\_Watson()” 的实现可信度较高；
-    \item 对于算法 “DFA::min\_Hopcroft()” 的更进一步测试见下节内容。
+    \item 除了 DFA::min\_Brzozowski() 算法，其他算法都不能移除 DFA 中的不可达状态；
+    \item 移除 DFA::usefulf() 可以用来移除 DFA 中的陷阱状态。
 \end{itemize}
 
 
@@ -949,16 +950,17 @@ FIRE engine 对 $Splittable$ 的实现如算法 \ref{al:split} 所示。
     \end{algorithmic}
 \end{algorithm}
 
-在本例中，由于 $L=(Q \setminus F) \times V$， $L$ 中第一个不为0的元素的下标是 “0” （ $L$ 的意义见附录注释 \ref{rem:means-of-L} ），$q$ 的值即为 L 中第一个不为 0 的元素的下标，此时 $q = 0$ 。依次取出 $repr = \{ 0,1 \}$ 中的元素，对所有的 $c \in V$ 执行 DFA::split() 。当 $p=0 \land q=0 $ 时，$[p]$ 中不能通过任何字符转移到 $[q]$ ；当 $p=1 \land q=0 $ 时，$[p]$ 中不能通过任何字符转移到 $[q]$ 。此时算法运行结束，但是等价类 $\{1,2 \}$ 此时还未被分割，等价类 $\{1,2 \}$ 被合并，成为新自动机（图 \ref{fig:DFAMin-3-3-inside}）中的 $\{ 1\}$ 于是 Hopcroft 算法输出了错误的结果。
+在本例中，由于 $L=(Q \setminus F) \times V$， $L$ 中第一个不为0的元素的下标是 “0” （ $L$ 的意义见附录注释 \ref{rem:means-of-L} ），$q$ 的值即为 L 中第一个不为 0 的元素的下标，此时 $q = 0$ 。依次取出 $repr = \{ 0,1 \}$ 中的元素，对所有的 $c \in V$ 执行 DFA::split() 。当 $p=0 \land q=0 $ 时，$[p]$ 中不能通过任何字符转移到 $[q]$ ；当 $p=1 \land q=0 $ 时，$[p]$ 中不能通过任何字符转移到 $[q]$ 。此时算法运行结束，但是等价类 $\{1,2 \}$ 此时还未被分割，等价类 $\{1,2 \}$ 被合并，成为新自动机（图 \ref{fig:DFAMin-3-3-inside}）中的 $\{ 1\}$ ，于是 Hopcroft 算法输出了错误的结果。
 
-通过对比总结可知，导致 Hopcroft 算法输出错误结果的非完全 DFA 满足式 \ref{eq:reson-hopcroft}
+通过对比总结可知，当 $p:p \in F$ ，对所有的 $c:c\in V$ ，使得 $ T(p,c) \notin (Q\setminus F) ) $，且该 DFA 满足 $|F| > |Q \setminus F| $ 时，也即式 \ref{eq:reson-hopcroft}
 
 \begin{equation}\label{eq:reson-hopcroft} 
     (c,p: \forall c \in V \land p \in F \land T(p,c) \notin (Q\setminus F) ) \land |F| > |Q \setminus F| 
 \end{equation}
+Hopcroft 算法有可能输出错误结果。
 
 \newpage
-\subsection{解决方法}
+\subsection{解决方法}\label{subsec:solve-hopcroft}
 
 由第 \ref{sec:reason-hopcroft} 的内容，总结出以下两种解决方案：
 
@@ -1091,7 +1093,7 @@ FIRE engine 中没有实现构造完全 DFA 的算法。
     
     公式表达形式为（若原 DFA 含不可达状态）
     \begin{equation}
-        |Min(Complete( useful (M)))| \leq |Min(M)|
+        |Complete( useful (M))| -  |useful (M)| = 1
     \end{equation}
 \end{remark}
 
@@ -1151,3 +1153,11 @@ FIRE engine 中没有实现构造完全 DFA 的算法。
         \EndFunction
     \end{algorithmic}
 \end{algorithm}
+
+{\bfseries 代码实现}
+
+算法 \ref{al:complete-M} 的代码实现见附录 \ref{sec:complete-imp} 。
+
+算法 \ref{al:usefuls} 的代码实现见附录 \ref{sec:usefulfs-imp} 。
+
+算法 \ref{al:SReachable} 的代码实现见附录 \ref{sec:SReachable-imp} 。

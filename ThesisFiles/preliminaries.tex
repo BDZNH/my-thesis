@@ -204,7 +204,7 @@ $$ [A]_E = \{ [a]_E :a \in A \} $$
     图 \ref{fig:state_graph} 中的 FA 接受的语言为 $ \mathcal{L}= \{ ba(1)^*\cup b(1)^* \}$。下文中使用符号 $\mathcal{L}$ 代替 “FA 接受的语言”。
 \end{example}
 
-\begin{definition}[完全 FA ($Complete$)]
+\begin{definition}[完全 FA ($Complete$)]\label{def:complete}
     一个完全 FA 满足式 \ref{eq:complete} ：
     \begin{equation} \label{eq:complete}
         Complete(M) \equiv ( \forall q,a:q\in Q \land a \in V : T(q,a) \not= \emptyset ) 
@@ -215,7 +215,7 @@ $$ [A]_E = \{ [a]_E :a \in A \} $$
     当且仅当 $E=\emptyset$时，$M$ 是 $\epsilon$-$free$ 的。
 \end{definition}
 
-\begin{definition}[可达状态 \cite{watson1993taxonomya}]
+\begin{definition}[可达状态 \cite{watson1993taxonomya}]\label{def:rechable-state}
     可达状态分为 “开始可达状态” 和 “可达结束状态” （ $M$ 中），其中
     \begin{itemize}
         \item 开始可达状态：从开始状态可以到达的状态，写作 $SReachable(M)$；
@@ -299,7 +299,7 @@ $Min_{\mathcal{C}}$ 仅定义在完全 DFA 上。
     \[ (\forall M : M \in FA : ( \mathcal{L} (M) )^R = \mathcal{L}_{FA}(M^R)) \]
 \end{transformation}
 
-\begin{transformation}[移除开始状态不可达状态\cite{watson1993taxonomyb}]
+\begin{transformation}[移除开始状态不可达状态\cite{watson1993taxonomyb}]\label{trans:usefuls}
     变换$useful_s \in FA \longrightarrow FA$移除开始状态不可达状态：
     \begin{table}[!htbp]
         \centering
