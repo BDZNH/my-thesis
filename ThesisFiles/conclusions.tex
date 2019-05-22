@@ -6,9 +6,9 @@
     \item 除了算法 DFA::min\_Brzozowski() ，其他算法都不能去除 DFA 中的开始不可达状态；
     \item 由于算法 DFA::min\_Brzozowski() 在某些情况下，会改变最小的 DFA 接受的语言，所以本文认为 FIRE engine 中对 Brzozowski 算法的实现还有不足的地方；
     \item 对函数 DFA::usefulf() 的修改有较高可信度，详见第 \ref{sec:usefulf} 节;
-    \item 算法 DFA::min\_Hopcroft() 严格来说不是算法的错误，而是数据不符合其要求，Bruce William Watson 在他的论文\cite[第三节]{watson1993taxonomyb}中基于完全 DFA 讨论了状态等价和最小化的相关内容原文为“ In this subsection, we restrict ourselves to considering minimization of $Compelete$ DFA's ”，但是在进行论文\cite[第四节]{watson1993taxonomyb}中描述最小化算法时没有提及限定在完全 DFA 上，再加之除了 Hopcroft 的算法（算法\ref{al:4-8}），其他算法并没有输出错误结果，所以对判断算法的正确性有一定的误导性。对于此算法的运行结果，本文认为第 \ref{subsec:solve-hopcroft} 节中的方案 2 ，也即构造完全自动机之后再进行最小化为比较合适的解决方法；
+    \item 算法 DFA::min\_Hopcroft() 严格来说不是算法的错误，而是数据不符合其要求，Bruce William Watson 在他的论文\cite[第三节]{watson1993taxonomyb}中基于完全 DFA 讨论了状态等价和最小化的相关内容原文为“ In this subsection, we restrict ourselves to considering minimization of $Compelete$ DFA's ”，但是在论文\cite[第四节]{watson1993taxonomyb}中描述最小化算法时没有提及限定在完全 DFA 上，再加之除了 Hopcroft 的算法（算法\ref{al:4-8}）外，其他算法并没有输出错误结果，所以对判断算法的正确性有一定的误导。对于此算法的运行结果，本文认为第 \ref{subsec:solve-hopcroft} 节中的方案 2 ，也即构造完全自动机之后再进行最小化为比较合适的解决方法；
     \item 经过测试，算法 DFA::min\_HopcroftUllman() 、 DFA::min\_dragon() 和 DFA::min\_Watson() 表现符合预期情况，本文认为这三个算法可以用于验证其他用于 DFA 最小化算法的正确性和有效性。
-    \item 本文也 FIRE engine 新增加了函数 “DTransRel::closure()” ，用于实现 $SReachable$。新增了函数 “DFA::usefulfs()”，用于移除 DFA 中的开始不可达状态。新增函数 “DFA::complete()”，用于构造一个完全 DFA。新增函数 “DFA::Complete()” ，用于检查 一个 DFA 是否是完全 DFA。
+    \item 本文为 FIRE engine 新增加了函数 “DTransRel::closure()” ，用于实现 $SReachable$。新增了函数 “DFA::usefulfs()”，用于移除 DFA 中的开始不可达状态。新增函数 “DFA::complete()”，用于构造一个完全 DFA。新增函数 “DFA::Complete()” ，用于检查 一个 DFA 是否是完全 DFA。
 \end{itemize}
 
 

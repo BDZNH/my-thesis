@@ -159,6 +159,7 @@
 \RequirePackage[chapter]{algorithm}
 \RequirePackage{algpseudocode,algorithmicx}
 \def\ALG@name{{算法}} %% 更改 “Algorithm” 为 “算法”，这里借鉴中国科学院大学Latex模板
+\renewcommand{\thealgorithm}{\arabic{chapter}.\arabic{algorithm}} %% 算法编号跟随章编号
 
 \if@print
     \RequirePackage[a4paper,left=4cm,right=2cm,top=3cm,bottom=2cm]{geometry}
@@ -271,11 +272,11 @@
         {}%
     {\textbf{\contentspage}}
   \fi
-  \titlecontents{section}[3.5em]{\zihao{-4}}%
+  \titlecontents{section}[2em]{\zihao{-4}}%
   {\contentslabel{2em}}%
       {}%
   {\textit{\contentspage}}
-  \titlecontents{subsection}[6.5em]{\zihao{-4}}%
+  \titlecontents{subsection}[3em]{\zihao{-4}}%
   {\contentslabel{3em}}%
       {}%
   {\textit{\contentspage}}
@@ -384,7 +385,7 @@
 \pagenumbering{roman}
 \pagestyle{myheadings}
 \phantomsection
-% \pdfbookmark[1]{\XDU@abstractnameheader}{toc}  %% 添加摘要页到书签
+\pdfbookmark[1]{\XDU@abstractnameheader}{abscn}  %% 添加摘要页到书签
 \vspace*{2em}
 \centerline{\heiti\chaptersize\XDU@abstractname}\vskip5pt\par%
 \vspace*{2em}
@@ -394,7 +395,7 @@
 \cleardoublepage%
 \pagestyle{headings}
 \phantomsection
-% \pdfbookmark[1]{\XDU@enabstractname}{toc}  %% 添加Abstract页到书签
+\pdfbookmark[1]{\XDU@enabstractname}{absen}  %% 添加Abstract页到书签
 \vspace*{2em}
 \centerline{\textbf{\chaptersize\XDU@enabstractname}}\vskip5pt\par%
 \vspace*{2em}
@@ -405,6 +406,7 @@
 \cleardoublepage
 }
 \def\maketitle{
+\pdfbookmark[1]{{封面}}{cover}  %% 添加封面到书签
 \begin{titlepage}
 %%  封面右上角班级学号格式
 \begin{table}

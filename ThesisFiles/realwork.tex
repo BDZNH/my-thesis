@@ -471,27 +471,29 @@ inline int CRSet::iter_end(const int it) const
 
 \subsection{解决方法}
 
-函数 DFA::min\_Hopcroft() 的主要实现部分如代码 \ref{lst:hopcroft-iter}。
+函数 DFA::min\_Hopcroft() 的主要功能实现部分如代码 \ref{lst:hopcroft-iter}所示。
 
 \begin{lstlisting}[language=C++,label={lst:hopcroft-iter},caption={ min-hop.cpp },firstnumber=100]
+    L[q]--;
+    ……
     for (repr.iter_start(p); !repr.iter_end(p); repr.iter_next(p))
     {
-        //分割等价类
+        ……
+        State r(split(p, q, C.iterator(L[q]), P));
         ……
     }
 \end{lstlisting}
 
-在分割等价类之前，判断 L[q] 是否等于 “C.size()”，若是，则减去 “1”，更改后为代码 \ref{lst:hopcroft-iter-edit}
-
+在遍历 $repr$ （等价类代表，见附录）之前，将当前需要处理的字符保存下来，更改后为代码 \ref{lst:hopcroft-iter-edit}
 
 \begin{lstlisting}[language=C++,label={lst:hopcroft-iter-edit},caption={ min-hop.cpp },firstnumber=100]
+    L[q]--;
+    CharRange c = C.iterator(L[q]);       // 新增
+    ……
     for (repr.iter_start(p); !repr.iter_end(p); repr.iter_next(p))
     {
-        if(L[q] == C.size()) // 新增
-        {                    // 新增
-            L[q]--;          // 新增
-        }                    // 新增
-        //分割等价类
+        ……
+        State r(split(p, q, c, P));      // 修改
         ……
     }
 \end{lstlisting}
@@ -745,7 +747,7 @@ current = -1
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
+% \newpage
 \section{DFA::min\_Hopcroft 算法运行结果错误}\label{sec:fixHopcroft}
 
 \subsection{运行结果}
@@ -959,7 +961,7 @@ FIRE engine 对 $Splittable$ 的实现如算法 \ref{al:split} 所示。
 \end{equation}
 Hopcroft 算法有可能输出错误结果。
 
-\newpage
+% \newpage
 \subsection{解决方法}\label{subsec:solve-hopcroft}
 
 由第 \ref{sec:reason-hopcroft} 的内容，总结出以下两种解决方案：
@@ -1024,7 +1026,7 @@ Hopcroft 算法（算法 \ref{al:4-8}）的正确性已经被证实过\cite{Hopc
     对于算法 \ref{al:hopcroft-old} 中语句 2 ，在算法的第一步，将 $Q$ 分为两个等价类 $ P = \{ \{Q\setminus F\}, F \}$，对应方案 1 的更改方法。
 \end{remark}
 
-并且 Bruce William Watson 也对 Hopcroft 算法（算法 \ref{al:4-8}）中语句 2 进行了详细的说明，Bruce William Watson 已经指出，由于一开始就将 $Q$ 分割成了 $P=[Q]_{E_{0}}=\{Q \backslash F, F\}$ ,所以只需要相对于 $(Q \backslash F, b)$ or $(F, b)$ （对所有的 $b \in V $）进行等价类分割即可\cite{Hopc71,watson1993taxonomyb}。所以方案 1 并不是一个比较好的方法。
+并且 Bruce William Watson 也对 Hopcroft 算法（算法 \ref{al:4-8}）中语句 2 进行了详细的说明，Bruce William Watson 已经指出，由于一开始就将 $Q$ 分割成了 $P=[Q]_{E_{0}}=\{Q \backslash F, F\}$ ,所以只需要相对于 $(Q \backslash F, b)$ 或 $(F, b)$ （对所有的 $b \in V $）进行等价类分割即可\cite{Hopc71,watson1993taxonomyb}。所以方案 1 并不是一个比较好的方法。
 
 按照方案 1 更改后 DFA::min-Hopcroft 通过样例测试，如表 \ref{tab:KeepMinResultofAll-fix1} 所示。
 
@@ -1057,21 +1059,21 @@ FIRE engine 中没有实现构造完全 DFA 的算法。
 
 \begin{algorithm}
     \caption{ 构造完全 DFA 的算法 }\label{al:complete-M}
-    %\small%\footnotesize
+    \small%\footnotesize
     \begin{algorithmic}[1]
         \Require 一个DFA $M=\{Q,V,T,E,S,F\}$
         \Ensure 一个与 $M$ 等价的完全 DFA $M'=\{Q',V,T',E,S,F\}$
         \Statex \Comment{$M$ 与 $M'$ 满足定义 \ref{def:isom}}
         \Function{complete}{}
-            \State {$flag:=false$};
+            \State {flag $:=false$};
             \ForAll {$p \in Q \land flag=false$}
                 \ForAll{$c \in V \land flag=false$}
                     \If{ $ T(p,c) = \emptyset $ }
-                         {$flag:=true$}
+                        {flag $:=true$}
                     \EndIf
                 \EndFor
             \EndFor
-            \If{flag=true}
+            \If{flag=$true$}
                 \State $usefulf(M)$; \Comment{移除 $M$ 中的陷阱状态}
                 \State $usefuls(M)$; \Comment{移除 $M$ 中的开始不可达状态}
                 \ForAll {$p \in Q \land flag=false$}
@@ -1089,13 +1091,13 @@ FIRE engine 中没有实现构造完全 DFA 的算法。
 \end{algorithm}
 
 \begin{remark}
-    构造完全自动机本应该仅对于满足 $ p,c:p\in Q \land c \in V: T(p,c)= \emptyset$ 的状态，增加转移关系 $T(p \times c \times sink)$ , $p,c$ 满足 $ p,c:p\in Q \land c \in V $。但是考虑到原本的 DFA 中可能有多个不可达状态，若仅仅构造完全 DFA ，DFA 的大小仍然会变大，所以应该在构造完全 DFA 前，移除 DFA 中的不可达状态，然后再构造完全 DFA 。这样构造出来的完全 DFA ，仅比原本的 DFA 移除不可达状态后多一个状态（陷阱状态）。有利于缩短算法的运行时间。
-    
-    公式表达形式为（若原 DFA 含不可达状态）
+    构造完全自动机本该仅当$T(p , c ) = \emptyset $ 时，增加转移关系 $T(p \times c \times sink)$, 其中 $p,c$ 满足 $ p,c:p\in Q \land c \in V $。但是考虑到原本的 DFA 中可能有多个不可达状态，若仅仅构造完全 DFA ，DFA 的大小仍然会变大，所以应该在构造完全 DFA 前，移除 DFA 中的不可达状态，然后再构造完全 DFA 。这样构造出来的完全 DFA 仅比原本的 DFA 移除不可达状态后多一个状态（陷阱状态）。有利于缩短算法的运行时间。
+\end{remark}
+
+公式表达形式为（若原 DFA 含不可达状态）
     \begin{equation}
         |Complete( useful (M))| -  |useful (M)| = 1
     \end{equation}
-\end{remark}
 
 \begin{remark}
     对于接受同一个 $\mathcal{L}$ 的最小的但不完全 DFA $M$ 和最小且完全的 DFA $M_{\mathcal{C}}$， $M_{\mathcal{C}}$ 比 $M$ 多一个陷阱状态（Sink State）\cite{watson1993taxonomyb}。
@@ -1139,6 +1141,7 @@ FIRE engine 中没有实现构造完全 DFA 的算法。
         \Statex %\Comment{$M$ 与 $M'$ 满足定义 \ref{def:isom}}
         \Function{SReachable}{}
             \State $ Q_1 := S $
+            \State $ Q_2 := \emptyset $
             \Repeat
                 \State $Q_1 := Q_1 \cup Q_2 $
                 \ForAll{$p \in Q_1$}

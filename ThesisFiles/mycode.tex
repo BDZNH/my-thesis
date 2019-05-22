@@ -46,13 +46,131 @@ int main()
 }
 \end{lstlisting}
 
-\section{$SReachable$ 实现代码}\label{sec:SReachable-imp}
+\section{Hopcroft 算法代码}
+
+本小节是经过第 \ref{sec:hopcroft} 节修改后的 Hopcroft 算法全文，位于文件 min-hop.cpp 。
+
+\begin{lstlisting}[language=C++,label={lst:hop},caption={文件 min-hop.cpp}]
+DFA& DFA::min_Hopcroft()
+{
+    assert(class_invariant());
+
+    // This algorithm requires that the DFA not have any final unreachable
+    // State.
+    //assert(Usefulf());
+
+    State q;
+
+    // Keep track of the combination fo all the out labels of State's.
+    CRSet C;
+    for (q = 0; q < Q.size(); q++)
+    {
+        C.combine(T.out_labels(q));
+    }
+
+    // Encode set L as a mapping from State to [0,|C|] where:
+    //         if q is a representative of a class in the partition P, then
+    //         L(the abstract list) contains
+    //                  ([q],C_0),([q],C_1),...,([q],C_(L(q)_1))
+    //         but not
+    //                  ([q],C_(L(q))),...,([q],C_(|C|_1))
+    int *const L(new int[Q.size()]);
+    for (q = 0; q < Q.size(); q++)
+    {
+        L[q] = 0;
+    }
+
+    // Initialize P to be total equivalence relation.
+    StateEqRel P(Q.size());
+
+    // Now set P to be E_0.
+    P.split(F);
+
+    // Now, build the set of equivalentatives and initialize L.
+    StateSet repr(P.representatives());
+
+    if (F.size() <= (Q.size() - F.size()))
+    {
+        repr.intersection(F);
+    }
+    else
+    {
+        repr.remove(F);
+    }
+
+    // Do the final set up of L
+    for (repr.iter_start(q); !repr.iter_end(q); repr.iter_next(q))
+    {
+        L[q] = C.size();
+    }
+
+    // Use a break to get of this loop
+    while (1)
+    {
+        // Find the first pair in L that still needs processing.
+        for (q = 0; q < Q.size() && !L[q]; q++);
+
+        // It may be that we're at the end of the processing.
+        if (q == Q.size())
+        {
+            break;
+        }
+        else
+        {
+            // mark this element of L as processed.
+            L[q]--;
+            CharRange c = C.iterator(L[q]);                      // 增加
+
+            // Iterate over al eq. classes, and try to split them.
+            State p;
+            repr = P.representatives();
+
+            for (repr.iter_start(p); !repr.iter_end(p); repr.iter_next(p))
+            {
+
+                // Now split [p] w.r.t (q,C_(L[q]))
+                State r(split(p, q, c, P));                     // 修改
+                // r is the representative of the new split of the 
+                // eq. class that was represented by p.
+
+                if (r != Invalid)
+                {
+                    // p and r are the new representatives.
+                    // Now update L with the smallest of
+                    // [p] and [r]
+
+                    if (P.equiv_class(p).size() <= P.equiv_class(r).size())
+                    {
+                        L[r] = L[p];
+                        L[p] = C.size();
+                    }
+                    else
+                    {
+                        L[r] = C.size();
+                    } // if
+                }  // if
+            } // for
+        } // if
+    } // while
+
+    // L is no longer needed.
+    delete L;
+
+    // we can now use P to compress the DFA.
+    compress(P);
+
+    assert(class_invariant());
+    return (*this);
+}
+\end{lstlisting}
+
+
+\section{SReachable 实现代码}\label{sec:SReachable-imp}
 
 类 DTransRel 为 FIRE engine 里面类 DFA 中存储转移关系的类，但是这个类并没有实现 $SReachable$ （见定义 \ref{def:rechable-state}）。本文提出实现 $SReachable$ 的算法（算法 \ref{al:SReachable}），本小节为代码实现。
 
 本文为 FIRE engine 增加的 $SReachable$ 功能声明为代码 \ref{lst:SReachable-def} 中的 “StateSet closure(const StateSet\& r) const;” ，传入参数 $r=S$。
 
-\lstset{style=mystyle}
 \begin{lstlisting}[language=C++,label={lst:SReachable-def},caption={文件 DTransRel.h}]
 class DTransRel :public StateTo<DTrans>
 {
@@ -76,11 +194,10 @@ StateSet DTransRel::closure(const StateSet& r) const
     StateSet temp;
     intermediate.set_domain(domain());
     temp.set_domain(domain());
-
-    while (result != intermediate)
+    do
     {
         result.set_union(intermediate);
-        intermediate.clear();
+        intermediate.set_union(result);
         State st;
         for (result.iter_start(st); !result.iter_end(st); result.iter_next(st))
         {
@@ -88,13 +205,12 @@ StateSet DTransRel::closure(const StateSet& r) const
             intermediate.set_union(temp);
             temp.clear();
         }
-    }
-
+    } while (result != intermediate);
     return(result);
 }
 \end{lstlisting}
 
-\section{$useful_s$ 实现代码}\label{sec:usefulfs-imp}
+\section{usefuls 实现代码}\label{sec:usefulfs-imp}
 
 $useful_s$ 用来移除 DFA 中的开始不可达状态（见变换 \ref{trans:usefuls}），但是 FIRE engine 中并没有实现这个功能，本文提出相应的算法（见算法 \ref{al:usefuls}）。
 
@@ -189,9 +305,9 @@ DFA & DFA::usefuls()
 }
 \end{lstlisting}
 
-\section{$Complete$ 实现代码}\label{sec:complete-imp}
+\section{omplete 实现代码}\label{sec:complete-imp}
 
-$Complete$ 用来构造完全 FA （见定义 \ref{def:complete}），由于本文的讨论仅针对 DFA，所以对该定义的实现也仅适用于 DFA。算法描述见算法 \ref{al:complete-M}。
+$complete$ 用来构造完全 FA （见定义 \ref{def:complete}），由于本文的讨论仅针对 DFA，所以对该定义的实现也仅适用于 DFA。算法描述见算法 \ref{al:complete-M}。
 
 向文件 DFA.h 内增加下内容
 
