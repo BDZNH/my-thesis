@@ -126,7 +126,7 @@ $$ [A]_E = \{ [a]_E :a \in A \} $$
     \begin{tabular}{lccccc}
         \toprule%\hline 
         \multirow{2}{*}{状态说明} & \multirow{2}{*}{状态} & \multicolumn{4}{c}{输入字符} \\
-		\cline{3-6}      &    &$a$ & $b$ & $1$ & $\epsilon$ \\
+		\cline{3-6}      &    & $a$ & $b$ & $1$ & ${\epsilon}$ \\
         %                        &        & \multicolumn{4}{c}{输入字符} \\
         %\cline{3-6}  {状态说明}  & {状态} &$a$ & $b$ & $1$ & $\epsilon$ \\
         \midrule%\hline
@@ -266,14 +266,14 @@ $$ [A]_E = \{ [a]_E :a \in A \} $$
     \label{fig:UsefulFA}
 \end{figure}
 
-\begin{definition}[确定性有限自动机 \cite{watson1993taxonomyb}]
+\begin{definition}[确定的有限自动机 \cite{watson1993taxonomyb}]
     当且仅当 
     \begin{itemize}
         \item 无多重开始状态；
         \item 无$\epsilon$转移；
         \item 转移函数$T \in Q \times V \longrightarrow \mathcal{P} (Q) $ 不将 $Q \times V$ 映射至多重状态。
     \end{itemize}
-    时有限自动机$M$是确定性的，称 $M$ 为确定性有限自动机（Deterministic Finite Automata，下称 DFA）。
+    时有限自动机$M$是确定的，称 $M$ 为确定的有限自动机（Deterministic Finite Automata，下称 DFA）。
     公式形式表达为式 \ref{eq:DetFA} ：
     \begin{equation}\label{eq:DetFA}
     Det(M) \equiv ( |S| \leq 1 \land \epsilon\mbox{-} free(E) \land ( \forall q,a:q \in Q \land a \in V : |T(q,a)| \leq 1 )) 
@@ -292,7 +292,7 @@ $Min_{\mathcal{C}}$ 仅定义在完全 DFA 上。
 
 \subsection{有限自动机的变换}
 
-\begin{transformation}[FA 的反转(reversal)\cite{watson1993taxonomyb}]
+\begin{transformation}[FA 的反转(reversal)\cite{watson1993taxonomyb}]\label{trans:reverse}
         $FA$反转由上标函数$ R \in FA \to FA $ 给出，它的定义如下：
         \[ (Q,V,T,S,F)^R = (Q,V,T^R,E^R,F,S) \]
     函数 $R$ 满足
@@ -318,27 +318,45 @@ $Min_{\mathcal{C}}$ 仅定义在完全 DFA 上。
 \[  (\forall M : M \in FA : Useful_s ( useful_s(M) ) \land \mathcal{L}_{FA} (useful_s(M)) = \mathcal{L}_{FA}(M)) \]
 \end{transformation}
 
-\begin{transformation}[子集构造\cite{watson1993taxonomyb}]
-    函数$subset$把一个$\epsilon$-$free$ FA 转换为一个 DFA (在子句 \textbf{let} $T'\in \mathcal{P}(Q) \times V \longrightarrow \mathcal{P}(\mathcal{P} (Q) )$ 中): 
+% \begin{transformation}[子集构造\cite{watson1993taxonomyb}]
+%     函数$subset$把一个$\epsilon$-$free$ FA 转换为一个 DFA (在子句 \textbf{let} $T'\in \mathcal{P}(Q) \times V \longrightarrow \mathcal{P}(\mathcal{P} (Q) )$ 中): 
+%     \begin{table}[!htbp]
+%         \centering
+%         %\small% fontsize
+%         \setlength{\tabcolsep}{4pt}% column separation
+%         \renewcommand{\arraystretch}{1.4}%row space 
+%         \begin{tabular}{lcll} 
+%             $subset(Q,V,T,\emptyset,S,F)$ & = & {\bfseries let} & $T'(U,a) = \{ (q:q\in U : T(q,a) ) \} $ \\
+%                                           &   &                 & $F'= \{ U : U \in \mathcal{P}(Q) \land U \cap F \not= \emptyset \} $ \\
+%                                           &   & {\bfseries in}  &                                         \\
+%                                           &   &                 & $ ( \mathcal{P}(Q),V,T',\emptyset,\{ S \},F' ) $  \\
+%                                           &   & {\bfseries end} &                               \\
+%         \end{tabular}
+%     \end{table}
+%     \\除了性质 $ \mathcal{L}_{FA}(subset(M))= \mathcal{L}_{FA}(M) $（对所有的$M \in FA$）之外，函数 $subset$ 还满足
+%     \[ (\forall M : M \in FA \land \epsilon \mbox{-} free(M) : Det(subset(M)) \land Complete(subset(M))) \]
+%     有时候也把它说成“幂集”构造。
+% \end{transformation}
+
+\begin{definition}[优化的子集构造\cite{watson1993taxonomyb}]
+    函数$subsetopt$把一个$\epsilon$-$free$ $FA$ 转换为一个 DFA。%此函数是$subset$的一个优化版本：
     \begin{table}[!htbp]
         \centering
         %\small% fontsize
         \setlength{\tabcolsep}{4pt}% column separation
-        \renewcommand{\arraystretch}{1.4}%row space 
+        \renewcommand{\arraystretch}{1.62}%row space 
         \begin{tabular}{lcll} 
-            $subset(Q,V,T,\emptyset,S,F)$ & = & {\bfseries let} & $T'(U,a) = \{ (q:q\in U : T(q,a) ) \} $ \\
-                                          &   &                 & $F'= \{ U : U \in \mathcal{P}(Q) \land U \cap F \not= \emptyset \} $ \\
+            $subset(Q,V,T,\emptyset,S,F)$ & = & {\bfseries let} & $ T'(U,a) = \{ (q:q\in U : T(q,a) ) \} $ \\
+                                          &   &                 & $ Q' = \mathcal{P} (Q) \setminus \{ \emptyset \} $ \\
+                                          &   &                 & $ F'= \{ U : U \in \mathcal{P}(Q) \land U \cap F \not= \emptyset \} $ \\
                                           &   & {\bfseries in}  &                                         \\
-                                          &   &                 & $ ( \mathcal{P}(Q),V,T',\emptyset,\{ S \},F' ) $  \\
+                                          &   &                 & $ ( Q',V,T' \cap (Q' \times V \times Q'),\emptyset,\{ S \},F' ) $  \\
                                           &   & {\bfseries end} &                               \\
         \end{tabular}
     \end{table}
-    \\除了性质 $ \mathcal{L}_{FA}(subset(M))= \mathcal{L}_{FA}(M) $（对所有的$M \in FA$）之外，函数 $subset$ 还满足
-    \[ (\forall M : M \in FA \land \epsilon \mbox{-} free(M) : Det(subset(M)) \land Complete(subset(M))) \]
-    有时候也把它说成“幂集”构造。
-\end{transformation}
-
-
+    \\除了性质$\mathcal{L}_{FA} (subsetopt(M)) = \mathcal{{L}} (M) $（对所有的$M\in FA$）之外，函数$subsetopt$还满足
+    $$ ( \forall M : M \in FA \land \epsilon \mbox{-}free(M) : Det(subset(M)) )  $$
+\end{definition}
 
 \section{等价性和最小化}
 

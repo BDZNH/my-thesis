@@ -48,7 +48,7 @@ int main()
 
 \section{Hopcroft 算法代码}
 
-本小节是经过第 \ref{sec:hopcroft} 节修改后的 Hopcroft 算法全文，位于文件 min-hop.cpp 。
+本小节是经过第 \ref{sec:hopcroft} 节修改后的 Hopcroft 算法源代码全文，位于文件 min-hop.cpp 。
 
 \begin{lstlisting}[language=C++,label={lst:hop},caption={文件 min-hop.cpp}]
 DFA& DFA::min_Hopcroft()
@@ -210,7 +210,7 @@ StateSet DTransRel::closure(const StateSet& r) const
 }
 \end{lstlisting}
 
-\section{usefuls 实现代码}\label{sec:usefulfs-imp}
+\section{usefuls 实现代码}\label{sec:usefuls-imp}
 
 $useful_s$ 用来移除 DFA 中的开始不可达状态（见变换 \ref{trans:usefuls}），但是 FIRE engine 中并没有实现这个功能，本文提出相应的算法（见算法 \ref{al:usefuls}）。
 
@@ -305,7 +305,7 @@ DFA & DFA::usefuls()
 }
 \end{lstlisting}
 
-\section{omplete 实现代码}\label{sec:complete-imp}
+\section{complete 实现代码}\label{sec:complete-imp}
 
 $complete$ 用来构造完全 FA （见定义 \ref{def:complete}），由于本文的讨论仅针对 DFA，所以对该定义的实现也仅适用于 DFA。算法描述见算法 \ref{al:complete-M}。
 

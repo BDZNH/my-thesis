@@ -161,6 +161,8 @@
 \def\ALG@name{{算法}} %% 更改 “Algorithm” 为 “算法”，这里借鉴中国科学院大学Latex模板
 \renewcommand{\thealgorithm}{\arabic{chapter}.\arabic{algorithm}} %% 算法编号跟随章编号
 
+\RequirePackage{titlesec}
+
 \if@print
     \RequirePackage[a4paper,left=4cm,right=2cm,top=3cm,bottom=2cm]{geometry}
 \else
@@ -290,7 +292,7 @@
     \titlecontents{chapter}[0em]{\bfseries}%
     {\thecontentslabel}%
       {\hspace*{0em}}%
-    {\titlerule*[10bp]{\textbf{.}}\textbf{\contentspage}}
+    {\titlerule*[10bp]{\textmd{.}}\textmd{\contentspage}}
   \fi
 \fi
 
@@ -382,7 +384,7 @@
 \fi%
 \def\make@abstract{%
 \cleardoublepage%
-\pagenumbering{roman}
+\pagenumbering{Roman}
 \pagestyle{myheadings}
 \phantomsection
 \pdfbookmark[1]{\XDU@abstractnameheader}{abscn}  %% 添加摘要页到书签
@@ -392,6 +394,7 @@
 \XDU@cabstract%
 \par\vspace*{2em}\noindent{\heiti\zihao{-4}\textbf{\XDU@keywordsname：\XDU@keywords}}%
 \vspace*{1em}%
+% \clearpage
 \cleardoublepage%
 \pagestyle{headings}
 \phantomsection

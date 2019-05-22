@@ -5,13 +5,15 @@
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[width=0.7\textwidth]{FAabsRel}
+    \includegraphics[width=0.95\textwidth]{classdiagram/FAabs.pdf}
     \caption{类FAabs及其派生类}
     \label{fig:FAabsRel}
 \end{figure}
 
+箭头 \includegraphics{jicheng.pdf} 由派生类指向基类。这些类与 FIRE engine 里面其他类的之间的关系见附录图 D.3 。
+
 \section{DFA类}
-在本文中，我们仅仅对 DFA 应用最小化算法，FIRE engine 提供了多种方式构造一个 DFA，要得到一个类 DFA 的对象，在已经实例化类 FA 、类 RFA 、类 RBFA 或类 LBFA 的情况下， 可以通过执行他们的成员成员函数 “determinism()” 得到一个类 DFA 对象。
+在本文中，我们仅仅对 DFA 应用最小化算法，FIRE engine 提供了多种方式构造一个 DFA，要得到一个类 DFA 的对象，在已经实例化类 FA 、类 RFA 、类 RBFA 或类 LBFA 的情况下， 可以通过执行他们的成员函数 “determinism()” 得到一个类 DFA 对象。
 
 
 类 DFA 的部分实现如表 \ref{tab:Class-DFA} 
@@ -30,38 +32,34 @@
         \midrule
         名称& 类型 & 属性  &\mbox{说明} \\
         \midrule
-        Q & StatePool & protected &          \\
+        Q & StatePool & protected &    $Q$      \\
         S & StateSet  & protected &  $S\subseteq Q$ \\
         F & StateSet  & protected &  $F\subseteq Q$\\
         T & DTransRel & protected &  转移关系\\
         \midrule 
         DFA(const DFA\_components\& r);& & public &构造函数 \\
-        reconstruct(const DFA\_components\& r); & DFA\& & public & \\
-        determinism() const; & DFA & public & \\
-        reverse(); & DFA\& & public & 反转 DFA \\
+        reconstruct(const DFA\_components\& r); & DFA\& & public &  重新构造当前DFA对象 \\
+        reverse(); & DFA\& & public & 反转 DFA （变换 \ref{trans:reverse}） \\
         min\_Brzozowski(); & DFA\& & public & 最小化算法 \\
         min\_HopcroftUllman(); & DFA\& & public & 最小化算法 \\
         min\_dragon(); & DFA\& & public & 最小化算法 \\
         min\_Hopcroft(); & DFA\& & public & 最小化算法 \\
         min\_Watson(); & DFA\& & public & 最小化算法 \\
-        usefulf(); & DFA\& & public &  \\
+        usefulf(); & DFA\& & public &  移除开始不可达状态\\
         split(State,State,CharRange,StateEqRel\&); & State & public & 分割等价类 \\
+        compress(const StateEqRel\& r); & DFA\& & public & 合并等价类 \\
         \bottomrule 
     \end{tabular}
 \end{table}
 
 
-由表 \ref{tab:Class-DFA} 可知，类$DFA$默认情况下，提供一个用“DFA\_components”变量的引用来实例化DFA对象的方法。
+如表 \ref{tab:Class-DFA} 所示，类 DFA 默认情况下，提供一个用“DFA\_components”变量的引用来实例化DFA对象的方法。类 DFA 的成员变量与其他类之间的关系见下一节 “DFA\_components 结构体”。
 
 
-
-
-
-
-%\newpage
+\newpage
 \section{DFA\_components 结构体}\label{sc:dfa_com}% ~\label{sc:dfa_com}
 
-从“DFA\_components”构造一个$DFA$对象是最简单直接的方法，观察“DFA\_components”的实现，如表\ref{tab:DFA-components}所示
+从“DFA\_components”构造一个 DFA 对象是最简单直接的方法，观察“DFA\_components”的实现，如表\ref{tab:DFA-components}所示（文件 DFA\_components.h）
 \begin{table}[!htbp]
     \caption{结构体 DFA\_components}
     \label{tab:DFA-components}
@@ -76,7 +74,7 @@
         \midrule
         名称& 类型 & \mbox{说明} \\
         \midrule
-        Q & StatePool &           \\
+        Q & StatePool &      $Q$     \\
         S & StateSet  &  $S\subseteq Q$ \\
         F & StateSet  &  $F\subseteq Q$ \\
         T & DTransRel &  转移关系  \\
@@ -88,12 +86,14 @@
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[width=\textwidth]{DFARel}
+    \includegraphics[width=0.8\textwidth]{classdiagram/DFA.pdf}
     \caption{DFA与其成员类及成员类的基类}
     \label{fig:DFARel}
 \end{figure}
 
-类 DFA 的成员变量 “T” 为一个 DTransRel 对象，公有继承自模板类 StateTo<T>，模板参数 “T” 为保护继承自类 TransImpl 的类 DTrans 。
+类 DFA 的成员变量 “T” 为一个 DTransRel 对象，公有继承自模板类 StateTo<T>，模板参数 “T” 为保护继承自类 TransImpl 的类 DTrans 。图 \ref{fig:DFARel} 中的类 $StateEqRel$ 为存储等价类关系的类，这个类在 Hopcroft ，dragon ，Watson 三个最小化算法中使用。
+
+箭头 \includegraphics{jicheng.pdf} 由派生类指向基类。箭头 \includegraphics{chengyuan.pdf} 从一个类指向其成员变量的类型，箭头上方标注了该成员变量的名称。
 
 \subsection{StatePool 类}
 StatePool类的部分实现如表 \ref{tab:Class-StatePool} （文件$StatePool.h$）：
@@ -142,8 +142,8 @@ StatePool类的部分实现如表 \ref{tab:Class-StatePool} （文件$StatePool.
         next & int & private &          \\
         \midrule 
         StatePool(const StatePool\& r);& & public &构造函数 \\
-        size() const; & int & public & \\
-        allocate();  &   State &  public & \\
+        size() const; & int & public &  $|Q|$ \\
+        allocate();  &   State &  public &  添加新的状态 \\
         set\_domain(const\ int r); & int & public & \\
         contains(const State r) const; & int & public & \\
         \bottomrule 
@@ -151,7 +151,7 @@ StatePool类的部分实现如表 \ref{tab:Class-StatePool} （文件$StatePool.
 \end{table}
 如表 \ref{tab:Class-StatePool} 所示，其中 StatePool::size() 和 StatePool::allocate() 为类 StatePool 两个比较重要的函数，前者为自动机 $M$ 的大小，也即 $|M|=|Q|$。 StatePool::allocate() 用来向 StatePool 增加新的状态。
 \subsection{StateSet 类}
-类$StateSet$的部分声明如表 \ref{tab:Class-StateSet}（文件$StateSet.h$）：
+类 StateSet 的部分声明如表 \ref{tab:Class-StateSet}（文件 StateSet.h ）：
 % \lstset{style=mystyle}
 % \begin{lstlisting}[language=C++,label={lst:StateSet},caption={StateSet}]
 % class StateSet :protected BitVec
@@ -183,26 +183,26 @@ StatePool类的部分实现如表 \ref{tab:Class-StatePool} （文件$StatePool.
         名称& 类型 & 属性  &\mbox{说明} \\
         \midrule 
         StateSet(); &  &  public & 构造函数 \\
-        empty() const; & int & public & \\
-        size() const;  & int & public & \\
+        empty() const; & int & public & 判断是否为空\\
+        size() const;  & int & public & 求大小\\
         complement();  & StateSet\& & public & 求补集 \\
-        add(const State r);  & StateSet\& & public &  \\
-        remove(const State r);  & StateSet\& & public &  \\
+        add(const State r);  & StateSet\& & public & 添加状态 \\
+        remove(const State r);  & StateSet\& & public & 移除状态 \\
         set\_union(const StateSet\& r);  & StateSet\& & public & 求并集 \\
         intersection(const StateSet\& r);  & StateSet\& & public & 求交集 \\
-        remove(const StateSet\& r);  & StateSet\& & public &  \\
-        smallest() const; & State & public & \\
+        remove(const StateSet\& r);  & StateSet\& & public & 集合减 \\
+        smallest() const; & State & public & 集合中最小的元素 \\
         set\_domain(const int r); & void & public & \\
         \bottomrule 
     \end{tabular}
 \end{table}
 
-由于在实例化过程$DFA$对象的过程中，只需要用到类 StateSet 的成员函数 StateSet::set\_domain() 和 StateSet::add() 。类 StateSet 中有集合的交、并、差、补、判断是否为空集等功能，这些功能实际上由类 State 的父类 BitVec 提供，这里不再赘述类 BitVec 的内容。
+由于在实例化过程 DFA 对象的过程中，只需要用到类 StateSet 的成员函数 StateSet::set\_domain() 和 StateSet::add() 。类 StateSet 中有集合的交、并、差、补、判断是否为空集等功能，这些功能实际上由类 State 的基类 BitVec 提供，这里不再赘述类 BitVec 的内容。
 
 
 \subsection{DTransRel 类}
 
-类$DTransRel$是$DFA$的一个重要成员，它存储了$DFA$的状态转移关系，最小化算法中用到的等价类分割、等价状态合并等功能都与这个类息息相关。类 DTransRel 的部分实现如表 \ref{tab:Class-DTransRel} 所示（文件$DTransRel.h$）：
+类 DTransRel 是 DFA 的一个重要成员，它存储了$DFA$的状态转移关系，最小化算法中用到的等价类分割、等价状态合并等功能都与这个类息息相关。类 DTransRel 的部分实现如表 \ref{tab:Class-DTransRel} 所示（文件$DTransRel.h$）：
 % \lstset{style=mystyle}
 % \begin{lstlisting}[language=C++,label={lst:DTransRel},caption={DTransRel}]
 % // Implement a deterministic transition relation, as a function from States time
@@ -236,12 +236,12 @@ StatePool类的部分实现如表 \ref{tab:Class-StatePool} （文件$StatePool.
         \midrule 
         DTransRel(); &  &  public & 构造函数 \\
         image(const State r, const char a) const; & State & public & \\
-        transition\_on\_range(State r, CharRange a) const; & State & public & \\
-        reverse\_transition(const State r, const CharRange a) const; & StateSet & public & \\
-        labels\_between(const State r, const StateSet\& s) const; & CRSet & public & \\
+        transition\_on\_range(State r, CharRange a) const; & State & public & $T(r,a)$\\
+        reverse\_transition(State r,CharRange a) const; & StateSet & public & \\
+        labels\_between(State r, StateSet\& s) const; & CRSet & public & \\
         out\_labels(const State r) const; & CRSet & public & \\
-        reverse\_closure(const StateSet\& r) const; & StateSet & public & \\
-        add\_transition(State p, CharRange a, State q); & DTransRel\& & public & \\
+        reverse\_closure(const StateSet\& r) const; & StateSet & public & $FReachable$ \\
+        add\_transition(State p, CharRange a, State q); & DTransRel\& & public & 添加转移关系 \\
         set\_domain(const int r); & void & public & \\
         \bottomrule 
     \end{tabular}
@@ -256,6 +256,7 @@ StatePool类的部分实现如表 \ref{tab:Class-StatePool} （文件$StatePool.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
 \section{实例化类DFA对象}\label{sec:get_a_dfa}
 
 在文件$DFA.cpp$中有如下实现：
@@ -391,3 +392,63 @@ current = -1
 \end{lstlisting}
 
 下文中将以表 \ref{tab:DFA1} 的形式来描述一个自动机，以代码 \ref{lst:DFASampleLog} 的形式来表示自动机在 FIRE engine 中的展现形式。实例化一个 DFA 时以 “实例化 DFA” 代指，不用代码表示。 
+
+\section{ StateEqRel 类}\label{sec:stateeqrel-def}
+
+类 StateEqRel 用于在 DFA 的最小化过程中存储等价类，需要注意的是，FIRE engine 计算等价关系时，并没有严格按照式 (2-4) 的定义来实现，而是通过其他方法。
+
+\begin{table}[!htbp]
+    \caption{类 StateEqRel}
+    \label{tab:Class-StateEqRel}
+    \centering
+    \small% fontsize
+    \setlength{\tabcolsep}{4pt}% column separation
+    \renewcommand{\arraystretch}{1.2}%row space 
+    %\begin{tabular}{lcrr} 
+        \begin{tabular}{llll} %l p{4em}<{\centering} p{3em}<{\centering} p{3em}<{\centering}
+        \toprule 
+         \multicolumn{4}{c}{class DTransRel :public StateTo<DTrans>} \\
+        \midrule
+        名称& 类型 & 属性  &\mbox{说明} \\
+        \midrule 
+        StateEqRel(const int r); & & public & 构造函数 \\
+        equivalize(const State p, const State q); & StateEqRel\& & public & 连接两个等价类 \\
+        split(const StateSet\& r); & StateEqRel\& & public & 从等价类中分离 $r$ \\
+        identity(); & StateEqRel\& & public & 使所有状态都不等价 \\
+        equivalent(const State p, const State q); & int & public & $p\equiv q $? \\
+        equiv\_class(const State p); & StateSet\& & public & $[p$]，状态 $p$ 的等价类 \\
+        eq\_class\_representative(const State p); & State & public & $[p]$ 的代表 \\
+        representatives(); & StateSet & public & 等价类代表集合 \\
+        \bottomrule 
+    \end{tabular}
+\end{table}
+
+下面对类 StateEqRel 的进行说明：
+
+\begin{remark}[实例化类 StateEqRel]
+    由构造函数 StateEqRel(const int r) 可知，实例化一个 StateEqRel 对象仅需传入一个整型变量即可。
+\end{remark}
+
+\begin{remark}[函数 equivalize(const State p, const State q)]
+    此函数的功能是将两个等价类合并，此函数在 Watson 最小化算法中使用（文件 min-bww.cpp）。例如，对于等价类集合$P=\{ \{ 0\}, \{ 1,2 \},\{3,4 \} \}$，向此函数传入参数 $p=0,q=1$，那么将会有$P = \{ \{ 0,1,2 \},\{3,4 \} \}$ 。
+\end{remark}
+
+\begin{remark}[函数split(const StateSet\& r)]
+    此函数的功能是从当前的等价类集合分割状态集 $R$。例如，对于等价类集合 $P=\{0,1,2 ,3,4\}$，状态集 $r=(0,1,2)$，执行此函数后，将会有$ P=\{ \{ 0,1,2\} , \{ 3,4 \} \} $。
+\end{remark}
+
+\begin{remark}[函数 identity()]
+    此函数将每个状态都设置为可区分的状态，例如，对于等价类集合 $ P=\{ 0,1,2,3,4 \} $，执行此函数之后，将会有 $ P= \{ \{ 0\}, \{ 1\}, \{ 2\}, \{ 3\}, \{ 4\}, \{ 5\}\} $。
+\end{remark}
+
+\begin{remark}[ 函数 equiv\_class(const State p)]
+    此函数将返回状态 $p$ 所在的等价类（记作 $[p]$），例如，，对于等价类集合  $ P=\{ \{ 0,1,2 \} , \{ 3,4\} \} $，传入参数 $p=1$ ，函数将返回状态集 $(0,1,2)$。
+\end{remark}
+
+\begin{remark}[函数 eq\_class\_representative(const State p)]
+    此函数将返回 $[p]$ 的代表，在实际的表项中，函数将返回 $[p]$ 中最小的状态\footnote{FIRE engine 中使用整数来代表状态。}。此函数在函数 StateEqRel::representatives() 和 DFA::split() 中使用。
+\end{remark}
+
+\begin{remark}[函数 representatives()]
+    此函数将返回等价类代表的集合，例如，对于等价类集合  $ P=\{ \{ 0,1,2 \} , \{ 3,4\} \} $ ，函数将返回状态集 $(0,3)$ （等价类中最小的状态的集合）。
+\end{remark}
