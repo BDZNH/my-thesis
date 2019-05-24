@@ -1,5 +1,5 @@
 %!TEX program = xelatex
-\documentclass[WordOneHalf]{XDUthesis}
+\documentclass[WordOneHalf,print]{XDUthesis}
 % 参数设置：
 %     功能设置：
 %         <nologo>:      封面页去除logo（默认有logo）
@@ -96,6 +96,28 @@
 
 \renewcommand{\algorithmicrequire}{\bfseries 输入： } %Use Input in the format of Algorithm
 \renewcommand{\algorithmicensure}{\bfseries 输出： } %UseOutput in the format of Algorithm
+
+\newcommand*{\img}[1]{%       行内图片
+    \raisebox{-.3\baselineskip}{%
+        \includegraphics[
+        height=\baselineskip,
+        width=\baselineskip,
+        keepaspectratio,
+        ]{#1}%
+    }%
+}
+
+\newlength\myheight
+\newlength\mydepth
+\settototalheight\myheight{Xygp}
+\settodepth\mydepth{Xygp}
+\setlength\fboxsep{0pt}
+\newcommand*\inlinegraphics[1]{%
+  \settototalheight\myheight{Xygp}%
+  \settodepth\mydepth{Xygp}%
+  \raisebox{-\mydepth}{\includegraphics[height=\myheight]{#1}}%
+}
+
 
 % \usepackage{program}
 

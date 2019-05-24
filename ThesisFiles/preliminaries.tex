@@ -94,7 +94,7 @@ $$ [A]_E = \{ [a]_E :a \in A \} $$
     \label{fig:state_graph}
 \end{figure}
 
-图\ref{fig:state_graph}中，自动机由$q_0$进入，接收字符“b”转移到状态$q_1$，状态$q_1$接收字符“a”转移到状态$q_2$，图中的两个同心圆圈住状态$q_2$表示结束状态（ final state ）或者接受状态（ accepted state ），意味自动机处理字符串到达此状态时，自动机就接受当前处理的字符串，状态$q_2$上有一个指向自己的箭头，意为接收字符“1”之后，仍然指向自己。而状态$q_1$经过$\epsilon$转移到状态$q_2$，意为状态$q_1$可以不接收任何字符即可转移到状态$q_2$。图\ref{fig:state_graph}中的自动机接受的字符串为$\mathcal{L}=ba(1)^*\cup b(1)^*$。
+图\ref{fig:state_graph}中，自动机由$q_0$进入，接收字符“b”转移到状态$q_1$，状态$q_1$接收字符“a”转移到状态$q_2$，图中的两个同心圆圈住状态$q_2$表示结束状态（ final state ）或者接受状态（ accepted state ），意味自动机处理字符串到达此状态时，自动机就接受当前处理的字符串，状态$q_2$上有一个指向自己的箭头，意为接收字符“1”之后，仍然指向自己。而状态$q_1$经过$\epsilon$转移到状态$q_2$，意为状态$q_1$可以不接收任何字符即可转移到状态$q_2$。%图\ref{fig:state_graph}中的自动机接受的字符串为$\mathcal{L}=ba(1)^*\cup b(1)^*$。
 
 \begin{definition}[有限自动机 \cite{watson1993taxonomyb}]
     有限自动机（Finite Automata，FA）是一个6元组$(Q,V,T,E,S,F)$，其中
@@ -147,12 +147,12 @@ $$ [A]_E = \{ [a]_E :a \in A \} $$
 \end{remark}
 
 \begin{remark}
-    本文在不同情况下使用不同的形式来表示转移关系，比如，对于转移关系 $T=(q_0 \times b \times q_1)$ ，也写成 $ q_1 = T(q_0 \times b) $。对于图 \ref{fig:state_graph} 中状态 $q_0$ 和 $q_2$ 之间的转移关系，可以描述为 $T(q_0\times w \times q_2)$ 或者 $q_2=T(q_0 \times w)$，其中，$w=ba$ 或 $w=b\epsilon$。
+    本文在不同情况下使用不同的形式来表示转移关系，比如，对于转移关系 $T=(q_0 \times b \times q_1)$ ，也写成 $ q_1 = T(q_0 , b) $。对于图 \ref{fig:state_graph} 中状态 $q_0$ 和 $q_2$ 之间的转移关系，可以描述为 $T(q_0\times w \times q_2)$ 或者 $q_2=T(q_0 , w)$，其中，$w=ba$ 或 $w=b\epsilon$。
 \end{remark}
 
 \subsection{有限自动机的性质}
 
-本节定义有限自动机（Finite automata，下称 FA）的性质，为了使定义更加简洁，引进三个FA： $M=(Q,V,T,E,S,F)$ , $M_0=(Q_0,V_0,T_0,E_0,S_0,F_0)$ ， $ M_1=(Q_1,V_1,T_1,E_1,S_1,F_1) $。
+本小节定义有限自动机（Finite automata，下称 FA）的性质，为了使定义更加简洁，引进三个特殊的 FA： $M=(Q,V,T,E,S,F)$ , $M_0=(Q_0,V_0,T_0,E_0,S_0,F_0)$ ， $ M_1=(Q_1,V_1,T_1,E_1,S_1,F_1) $。
 
 \begin{definition}[FA 的大小]
     定义一个FA的大小为$|M|=|Q|$。
@@ -178,7 +178,7 @@ $$ [A]_E = \{ [a]_E :a \in A \} $$
     \[ 
         T^*(aw) = E^* \circ T(a) \circ T^*(w)    
     \]
-    操作符$\circ$在惯例 A.5 中定义。
+    操作符$\circ$在定义 2.5 中定义。
 \end{definition}
 
 \begin{definition}[左语言和右语言 \cite{watson1993taxonomyb}]
@@ -201,11 +201,11 @@ $$ [A]_E = \{ [a]_E :a \in A \} $$
 \end{definition}
 
 \begin{example}[FA 的语言]
-    图 \ref{fig:state_graph} 中的 FA 接受的语言为 $ \mathcal{L}= \{ ba(1)^*\cup b(1)^* \}$。下文中使用符号 $\mathcal{L}$ 代替 “FA 接受的语言”。
+    图 \ref{fig:state_graph} 中的 FA 接受的语言为 $ \mathcal{L}= \{ ba(1)^*\cup b(1)^* \}$。下文中使用符号 $\mathcal{L}$ 代替 FA 接受的 “语言”。
 \end{example}
 
-\begin{definition}[完全 FA ($Complete$)]\label{def:complete}
-    一个完全 FA 满足式 \ref{eq:complete} ：
+\begin{definition}[完全 FA ($Complete$)\cite{watson1993taxonomyb}]\label{def:complete}
+    一个完全 FA 满足式 (\ref{eq:complete} )：
     \begin{equation} \label{eq:complete}
         Complete(M) \equiv ( \forall q,a:q\in Q \land a \in V : T(q,a) \not= \emptyset ) 
     \end{equation}
@@ -270,8 +270,8 @@ $$ [A]_E = \{ [a]_E :a \in A \} $$
     当且仅当 
     \begin{itemize}
         \item 无多重开始状态；
-        \item 无$\epsilon$转移；
-        \item 转移函数$T \in Q \times V \longrightarrow \mathcal{P} (Q) $ 不将 $Q \times V$ 映射至多重状态。
+        \item 无$\epsilon$转移关系；
+        \item 转移函数$T \in Q \times V \longrightarrow \mathcal{P} (Q) $ 不将 $Q \times V$ 映射至多个状态。
     \end{itemize}
     时有限自动机$M$是确定的，称 $M$ 为确定的有限自动机（Deterministic Finite Automata，下称 DFA）。
     公式形式表达为式 \ref{eq:DetFA} ：
@@ -282,7 +282,7 @@ $$ [A]_E = \{ [a]_E :a \in A \} $$
 \end{definition}
 
 
-\begin{definition}[DFA 的最小化]\label{def:min}
+\begin{definition}[DFA 的最小化\cite{watson1993taxonomyb}]\label{def:min}
     满足以下条件时，$M\in DFA$是最小的：
     { \small \[  Min(M) \equiv (\forall M' : M' \in DFA \land Complete(M') \land \mathcal{L}(M) = \mathcal{L}_{FA}(M') : |M| \leq |M'| ) \] }
 函数 $Min$ 仅定义在 DFA 上。一个最小的但是仍然完全的 DFA 的定义如下：
@@ -296,16 +296,16 @@ $Min_{\mathcal{C}}$ 仅定义在完全 DFA 上。
         $FA$反转由上标函数$ R \in FA \to FA $ 给出，它的定义如下：
         \[ (Q,V,T,S,F)^R = (Q,V,T^R,E^R,F,S) \]
     函数 $R$ 满足
-    \[ (\forall M : M \in FA : ( \mathcal{L} (M) )^R = \mathcal{L}_{FA}(M^R)) \]
+    \[ (\forall M : M \in FA : ( \mathcal{L}_{FA} (M) )^R = \mathcal{L}_{FA}(M^R)) \]
 \end{transformation}
 
 \begin{transformation}[移除开始状态不可达状态\cite{watson1993taxonomyb}]\label{trans:usefuls}
     变换$useful_s \in FA \longrightarrow FA$移除开始状态不可达状态：
     \begin{table}[!htbp]
         \centering
-        \small% fontsize
-        \setlength{\tabcolsep}{4pt}% column separation
-        \renewcommand{\arraystretch}{1.4}%row space 
+        %\small% fontsize
+        \setlength{\tabcolsep}{1pt}% column separation
+        \renewcommand{\arraystretch}{1.3}%row space 
         \begin{tabular}{lcll} 
             $useful_s(Q,V,T,E,S,F)$ & = & {\bfseries let} & $U = SReachable(Q,V,T,E,S,F)$ \\
                                     &   & {\bfseries in}  &                               \\
@@ -343,10 +343,10 @@ $Min_{\mathcal{C}}$ 仅定义在完全 DFA 上。
     \begin{table}[!htbp]
         \centering
         %\small% fontsize
-        \setlength{\tabcolsep}{4pt}% column separation
-        \renewcommand{\arraystretch}{1.62}%row space 
+        \setlength{\tabcolsep}{2pt}% column separation
+        \renewcommand{\arraystretch}{1.3}%row space 
         \begin{tabular}{lcll} 
-            $subset(Q,V,T,\emptyset,S,F)$ & = & {\bfseries let} & $ T'(U,a) = \{ (q:q\in U : T(q,a) ) \} $ \\
+            $subsetopt(Q,V,T,\emptyset,S,F)$ & = & {\bfseries let} & $ T'(U,a) = \{ (q:q\in U : T(q,a) ) \} $ \\
                                           &   &                 & $ Q' = \mathcal{P} (Q) \setminus \{ \emptyset \} $ \\
                                           &   &                 & $ F'= \{ U : U \in \mathcal{P}(Q) \land U \cap F \not= \emptyset \} $ \\
                                           &   & {\bfseries in}  &                                         \\
@@ -360,10 +360,10 @@ $Min_{\mathcal{C}}$ 仅定义在完全 DFA 上。
 
 \section{等价性和最小化}
 
-令 $M=\{Q,V,T,\emptyset,S,F \}$ 为一个完全 DFA，并且 $M$ 中所有状态都是开始可达的。
+令 $M=\{Q,V,T,\emptyset,S,F \}$ 为一个完全 DFA，并且 $M$ 中所有状态都是可达状态。
 
 \begin{definition}[状态的等价\cite{watson1993taxonomyb}]
-    当$M$ 中的状态 $ p,q $ 满足式 \ref{eq:equivalence} 时，称状态 $p,q$ 等价。
+    当$M$ 中的状态 $ p,q $ 满足式 (\ref{eq:equivalence}) 时，称状态 $p,q$ 等价。
     \begin{equation} \label{eq:equivalence}
         (p,q) \in E \equiv ( \overrightarrow{\mathcal{L}}(p) = \overrightarrow{\mathcal{L}}(q) )
     \end{equation}
@@ -371,11 +371,15 @@ $Min_{\mathcal{C}}$ 仅定义在完全 DFA 上。
 \end{definition}
 
 \begin{definition}[状态的等价\cite{book1}]
-    给出状态等价的另一种描述。对给定的 $DFA$ $M=(Q,V,T,\emptyset,S,F)$，如果 $\exists w \in V^*$ ，使得$Q$ 中的两个状态 $p$ 和 $q$，$T(q,w)\in F$ 和 $T(p,w)$ 有且仅有一个成立，那么称 $p$ 和 $q$ 是可区分的，否则称 $p$ 和 $q$ 等价，写作 $p \equiv q$。
+    给出状态等价的另一种描述。对给定的 $DFA$ $M=(Q,V,T,\emptyset,S,F)$，如果 $\exists w \in V^*$ ，使得$Q$ 中的两个状态 $p$ 和 $q$，若$T(q,w)\in F$ 和 $T(p,w)\in F$ 有且仅有一个成立，那么称 $p$ 和 $q$ 是可区分的，否则称 $p$ 和 $q$ 等价，写作 $p \equiv q$。
 \end{definition}
 
 \begin{remark}
     关系 $D$ （Distinguishable） 是可区分的状态，$E$ 和 $D$ 满足 $D=\lnot E$。
+\end{remark}
+
+\begin{remark}[操作符 $\setminus$]
+    $M$ 中，若 $p \in (Q \setminus F)$ ， 那么 $ p \notin F$。
 \end{remark}
 
 \begin{remark}
@@ -389,7 +393,7 @@ $Min_{\mathcal{C}}$ 仅定义在完全 DFA 上。
 给出一种用于 DFA 的最小化算法\cite{book1,zf14Min,yingjie2009describing}，描述如算法 \ref{ali:classic-al} 所示：
 
 \begin{algorithm}
-    \caption{经典算法}\label{ali:classic-al}
+    \caption{经典算法（也称标记法\cite{zf14Min}）}\label{ali:classic-al}
     \begin{algorithmic}[1]
         \Require DFA $M$
         \Ensure 与 $M$ 同构的最小的 DFA
@@ -439,7 +443,7 @@ $Min_{\mathcal{C}}$ 仅定义在完全 DFA 上。
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.6\textwidth]{Min/markAlexample}
-    \caption{一个接受 $\mathcal{L}=\{ 0(0)^*1(0,1)^* \cup 1(0)^*1(0,1)^*  \}$ 的 DFA }
+    \caption{一个接受 $\mathcal{L}=\{ 0(0)^*1(0|1)^* \cup 1(0)^*1(0|1)^*  \}$ 的 DFA }
     \label{fig:DFAMin-3-0-minexample}
 \end{figure}
 

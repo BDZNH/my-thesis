@@ -3,16 +3,15 @@
 \begin{abstract}
   本文对有限自动机 C++ 工具箱中的五个最小化算法进行功能测试。有限自动机 C++ 工具箱对 Hopcroft 算法（由 Hopcroft 提出）的实现需要输入数据为完全的确定的有限自动机。而其他三个最小化算法 HopcroftUllman 算法（由 Hopcroft 和 Ullman 提出）、 dragon 算法（由 Aho Sethi 和 Ullman 提出），Waston 算法（由 Bruce William Watson 提出）则没有明确要求数据数据是否是为完全的确定的有限自动机。除了 Brzozowski 的算法外，以上四个最小化算法都依赖于计算状态的等价关系（或可区分的关系），有限自动机 C++ 工具箱对 Brzozowski 算法的实现有一定的缺陷，在某些情况下会输出错误的结果。
 
-  本文还为有限自动机 C++ 工具箱增加了用来计算从开始状态可以到达的状态的集合的算法(SReachable)、移除确定的有限自动机中从开始状态不可到达的状态的算法（usefuls）和构造完全的确定的有限自动机的算法(complete)。并且修正了其中移除完全有限自动机中不可以到达结束状态的状态的算法（usefulf）中的错误。
+  本文还为有限自动机 C++ 工具箱增加了用来计算从开始状态可以到达的状态的集合的算法(SReachable)、移除确定的有限自动机中从开始状态不可到达的状态的算法（usefuls）和构造完全的确定的有限自动机的算法(complete)。并且修正了其中用来移除确定的有限自动机中不可以到达结束状态的状态的算法（usefulf）中的错误。
 
 \end{abstract}
-\keywords{确定的有限自动机, 最小化, 算法, 状态等价}
+\keywords{确定的有限自动机, 最小化算法, 状态等价}
 
 % 英文摘要
 \begin{enabstract}
-  This paper is just a sample example for the users in learning the \XDUthesis. I will try my best to use the commands and environments which are involved by the \XDUthesis. Also, the popular composition skills in figures, tables and equations will be elaborated.
+  This paper test five minimization algorithms implemented by the C++ toolkit for finite automata. In the C++ toolkit for finite automata, Hopcroft algorithm (given by Hopcroft) need a complete finite automata, while other three algorithm don't. The other three minimization algorithms are HopcroftUllman algorithm (given by Hopcroft and Ullman), dragon algorithm (given by Aho Sethi and Ullman), Waston algorithm (given by Bruce William Watson). All except Brzozowski's algorithm of the five minimization algorithms rely on determining the set of automaton states which are equivalent. And Brzozowski minimization algorithm implemented by the C++ toolkit for finite automata will give a error anwser for some deterministic finite automata.
   
-  In the part unimportant, I will show something others, such as poems and lyrics.
-
+  This paper add three new algorithms into the C++ toolkit for finite automata. The first one is used to compute the set of the states that can reach from a start state (SReachable). The second one is used to remove the states that can't reach from the a start state (usefuls). The last one is used to construct complete deterministic finite automata (complete). And this paper fix the algorithm (usefulf) which is used to remove the states that can't reach a final state int the C++ toolkit for finite automata.
 \end{enabstract}
-\enkeywords{XDUthesis, commands, environments, skills}
+\enkeywords{Deterministic finite automata, minimization algorithm, equivalence of state}

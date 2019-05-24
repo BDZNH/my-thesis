@@ -5,8 +5,6 @@
 
 一个实例化 DFA 类的例子如代码 \ref{lst:DFASample} 所示。代码 \ref{lst:DFASample} 中执行了 DFA::usefulf() 函数，去除多余的状态，让输出数据与原始数据相对应。代码 \ref{lst:DFASample} 对应的 DFA 为图 \ref{fig:keepMin-1-nonTheState} 。
 
-
-\lstset{style=mystyle}
 \begin{lstlisting}[language=C++,label={lst:DFASample},caption={实例化DFA示例}]
 #include"DFA.h"
 #include<iostream>
@@ -46,9 +44,176 @@ int main()
 }
 \end{lstlisting}
 
+\section{StateEqRel 测试代码}
+
+本小节是第 \ref{sec:test:stateeqrel} 节的测试代码，测试代码如下
+\begin{lstlisting}[language=C++,label={lst:StateEqRel-test},caption={类 StateEqRel 的测试代码}]
+#include"StateEqRel.h"
+#include"StateSet.h"
+using namespace std;
+void StateEqRelTest()
+{
+    StateEqRel P(10);  //初始化等价类集合 [0,10) 
+    cout << P << endl;
+
+    StateSet st1;
+    st1.set_domain(10);
+    st1.add(0);
+    st1.add(1);
+    st1.add(2);         
+    cout << st1 << endl;// 状态集 (0,1,2)
+
+    P.split(st1);       // 从 P 中分离 st1
+    cout << P << endl;
+
+    StateSet st2;
+    st2.set_domain(10);
+    st2.add(5);
+    st2.add(6);
+    cout << st2 << endl;// 状态集 (0,5,6)
+
+    P.split(st2);       // 从 P 中分离 st2
+    cout << P << endl;
+
+    cout << P.representatives() << endl;// P 中等价类代表的集合
+    cout << P.equivalent(0, 1) << endl; // 0 和 1 是否在一个等价类
+    cout << P.equivalent(0, 9) << endl; // 0 和 9 是否在一个等价类
+    cout << P.equivalent(0, 5) << endl; // 0 和 5 是否在一个等价类
+    cout << P.equiv_class(5) << endl;   // [5]
+    cout << P.eq_class_representative(3) << endl; // [3] 的代表
+    cout << P.eq_class_representative(5) << endl; // [5] 的代表
+    cout << P.equivalize(1, 5) << endl; // 合并 [1] 和 (5)
+    P.identity();                       // 使所有状态都不等价
+    cout << P << endl;                  
+}
+\end{lstlisting}
+
+代码 \ref{lst:StateEqRel-test} 的输出如下：
+
+\begin{lstlisting}[language=C++,label={lst:StateEqRel-test-result},caption={代码 \ref{lst:StateEqRel-test} 的输出}]
+StateEqRel
+{ 0  1  2  3  4  5  6  7  8  9 }
+
+{ 0  1  2 }
+
+StateEqRel
+{ 0  1  2 }
+{ 3  4  5  6  7  8  9 }
+
+{ 5  6 }
+
+StateEqRel
+{ 0  1  2 }
+{ 3  4  7  8  9 }
+{ 5  6 }
+
+{ 0  3  5 }
+1
+0
+0
+{ 5  6 }
+3
+5
+
+StateEqRel
+{ 0  1  2 }
+{ 3  4  7  8  9 }
+{ 5  6 }
+
+StateEqRel
+{ 0  1  2  5  6 }
+{ 3  4  7  8  9 }
+
+StateEqRel
+{ 0 }
+{ 1 }
+{ 2 }
+{ 3 }
+{ 4 }
+{ 5 }
+{ 6 }
+{ 7 }
+{ 8 }
+{ 9 }
+\end{lstlisting}
+
+\section{usefulf 经过修改后的源代码}
+
+本小节是经过第 \ref{sec:usefulf} 节修改后的代码，代码全文如下：
+
+\begin{lstlisting}[language=C++,label={lst:usefulf-fix},caption={文件 DFA.cpp}]
+DFA& DFA::usefulf()
+{
+	assert(class_invariant());
+	StateSet freachable(T.reverse_closure(F));
+	StateTo<State> newnames;
+	newnames.set_domain(Q.size());
+	
+	// All components will be constructed into a special structure :
+	DFA_components ret;
+	State st;
+	for (st = 0; st < Q.size(); st++)
+	{
+		// If this is a Usefulf State, carry it over by giving it a name
+		// in the new DFA.
+		if (freachable.contains(st))
+		{
+			newnames.map(st) = ret.Q.allocate();
+		}
+		else                              // 新增
+		{                                 // 新增
+			newnames.map(st) = Invalid;   // 新增
+		}                                 // 新增
+    }
+    
+	// It is possible that nothing needs to be done(ie.the all States were
+	// already F useful).
+	if (Q.size() != ret.Q.size())
+	{
+		ret.T.set_domain(ret.Q.size());
+		ret.F.set_domain(ret.Q.size());
+
+		CRSet a;
+		for (st = 0; st < Q.size(); st++)
+		{
+			// Only construct the transitions if st is final reachable.
+			if (freachable.contains(st))
+			{
+				a = T.out_labels(st);
+				State stprime(newnames.lookup(st));
+
+				CharRange b;
+				int it;
+				// Construct the transitions.
+				for (it = 0; !a.iter_end(it); it++)
+				{
+					b = a.iterator(it);
+					State stdest;           // 新增
+					stdest = newnames.lookup(T.transition_on_range(st, b));  // 新增
+					if (stprime != Invalid &&  stdest != Invalid)   // 新增
+					{                                               // 新增 
+						ret.T.add_transition(stprime, b, stdest);   // 修改
+					}                                               // 新增
+				}
+				// This may be a final State.
+				if (F.contains(st)) ret.F.add(stprime);
+			}
+		}
+		ret.S.set_domain(ret.Q.size());
+
+		// Add a start State only if the original one was final reachable.
+		if (S.not_disjoint(freachable)) ret.S.add(newnames.lookup(S.smallest()));
+		reconstruct(ret);
+	}
+	assert(class_invariant());
+	return(*this);
+}
+\end{lstlisting}
+
+
 \section{Hopcroft 算法代码}
 
-本小节是经过第 \ref{sec:hopcroft} 节修改后的 Hopcroft 算法源代码全文，位于文件 min-hop.cpp 。
+本小节是经过第 \ref{sec:hopcroft} 节修改后的 Hopcroft 算法源代码全文，位于文件 min-hop.cpp 。修改位置为第 69 行和第 79 行。
 
 \begin{lstlisting}[language=C++,label={lst:hop},caption={文件 min-hop.cpp}]
 DFA& DFA::min_Hopcroft()
@@ -57,7 +222,7 @@ DFA& DFA::min_Hopcroft()
 
     // This algorithm requires that the DFA not have any final unreachable
     // State.
-    //assert(Usefulf());
+    assert(Usefulf()); // 将在Release模式下禁用
 
     State q;
 
