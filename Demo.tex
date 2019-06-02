@@ -74,7 +74,28 @@
     numberstyle = \footnotesize\ttfamily
 }
 
-\lstset{style=mystyle}
+\lstdefinestyle{printstyle}{
+    backgroundcolor=\color{white},   
+    %commentstyle=\color{black},
+    commentstyle=\color{black},
+    keywordstyle=\color{black},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{black},
+    %basicstyle=\footnotesize\sffamily,
+    basicstyle=\linespread{1}\small\ttfamily,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=4
+}
+
+\lstset{style=printstyle}
 
 %%% 自动换行设置
 \tolerance=1
@@ -90,9 +111,9 @@
 %%  算法项目的设置
 % \setcounter{algorithm}[chapter] %% 算法编号
 \renewcommand{\thealgorithm}{\arabic{chapter}.\arabic{algorithm}} %% 算法编号
-\algrenewcommand\algorithmicrepeat{\textbf{do~}}
-\algrenewcommand\algorithmicuntil{\textbf{od}}
-\algrenewcommand\algorithmicthen{$\longrightarrow$}
+% \algrenewcommand\algorithmicrepeat{\textbf{do~}}
+% \algrenewcommand\algorithmicuntil{\textbf{od}}
+% \algrenewcommand\algorithmicthen{$\longrightarrow$}
 
 \renewcommand{\algorithmicrequire}{\bfseries 输入： } %Use Input in the format of Algorithm
 \renewcommand{\algorithmicensure}{\bfseries 输出： } %UseOutput in the format of Algorithm

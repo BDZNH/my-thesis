@@ -498,7 +498,7 @@ public:
 DFA & DFA::complete()
 {
     
-    if (!Complete())
+    if (Complete())
     {
         return (*this);
     }

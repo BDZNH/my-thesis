@@ -408,6 +408,7 @@ $Min_{\mathcal{C}}$ 仅定义在完全 DFA 上。
                 \EndFor
             \EndFor
         \Until{没有新的状态对被标记}
+		\State {合并未被标记的状态对，构造新的 DFA}
     \end{algorithmic}
 \end{algorithm}
 
